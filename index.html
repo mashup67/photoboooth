@@ -2,38 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Photobooth</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Photobooth</title>
     <link rel="stylesheet" href="style2.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-box">
         <h2>📸 LOGIN TO USE PHOTO BOOTH</h2>
         <div id="g_id_onload"
-            data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
-            data-context="signin"
-            data-ux_mode="popup"
-            data-callback="handleCredentialResponse"
-            data-auto_prompt="false">
+             data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
         </div>
         <div class="g_id_signin"
-            data-type="standard"
-            data-shape="pill"
-            data-theme="outline"
-            data-text="signin_with"
-            data-size="large"
-            data-logo_alignment="center">
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script>
         function handleCredentialResponse(response) {
             const data = jwt_decode(response.credential);
-            // Optional: save token or user info if needed
-            localStorage.setItem("user", JSON.stringify(data));
-            // Redirect to main site after login
-            window.location.href = "login.html";
+            if (data) {
+                window.location.href = "home.html";
+            }
         }
     </script>
 </body>
