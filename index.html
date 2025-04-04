@@ -8,15 +8,6 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-<script>
-    function handleCredentialResponse(response) {
-        const data = jwt_decode(response.credential);
-        if (data) {
-            localStorage.setItem("loggedIn", "true"); // ✅ Mark user as logged in
-            window.location.href = "home.html";
-        }
-    }
-</script>
 
     <!-- Music Play Button -->
     <button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
@@ -49,7 +40,7 @@
         </div>
     </div>
 
-    <!-- Background music (hidden player) -->
+    <!-- Background music -->
     <audio id="bg-music" loop>
         <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
     </audio>
@@ -60,6 +51,7 @@
         function handleCredentialResponse(response) {
             const data = jwt_decode(response.credential);
             if (data) {
+                localStorage.setItem("loggedIn", "true"); // ✅ Set login flag
                 window.location.href = "home.html";
             }
         }
@@ -69,7 +61,7 @@
             document.getElementById("loader-wrapper").style.display = "none";
         };
 
-        // Music playback
+        // Play background music
         document.getElementById("play-music").addEventListener("click", () => {
             const music = document.getElementById("bg-music");
             music.play();
@@ -96,4 +88,3 @@
     </script>
 </body>
 </html>
-
