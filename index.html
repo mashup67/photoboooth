@@ -8,6 +8,9 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+<!-- Music Play Button -->
+<button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
+
     <!-- Background particles -->
     <div id="particles-js"></div>
 
@@ -37,9 +40,10 @@
     </div>
 
     <!-- Background music (hidden player) -->
-    <audio autoplay loop hidden>
-        <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
-    </audio>
+  <audio id="bg-music" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
+</audio>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
