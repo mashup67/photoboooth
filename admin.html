@@ -25,7 +25,9 @@
                 <th>Login Time</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="user-list">
+            <tr><td colspan="3">Loading users...</td></tr>
+        </tbody>
     </table>
 
     <!-- Logout Confirmation Popup -->
@@ -78,20 +80,28 @@
 
         // 📜 Fetch Users from Firebase
         function fetchUsers() {
-            const usersTable = document.querySelector("#users-table tbody");
+            const userList = document.getElementById("user-list");
+            userList.innerHTML = "<tr><td colspan='3'>Fetching users...</td></tr>";
 
             db.ref("users").once("value", (snapshot) => {
-                usersTable.innerHTML = ""; // Clear existing data
+                userList.innerHTML = ""; // Clear existing data
 
-                snapshot.forEach((childSnapshot) => {
-                    const user = childSnapshot.val();
-                    const row = `<tr>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${new Date(user.time).toLocaleString()}</td>
-                    </tr>`;
-                    usersTable.innerHTML += row;
-                });
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const user = childSnapshot.val();
+                        const row = `<tr>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${new Date(user.time).toLocaleString()}</td>
+                        </tr>`;
+                        userList.innerHTML += row;
+                    });
+                } else {
+                    userList.innerHTML = "<tr><td colspan='3'>No users found.</td></tr>";
+                }
+            }).catch((error) => {
+                console.error("Error fetching users:", error);
+                userList.innerHTML = "<tr><td colspan='3'>Error loading users.</td></tr>";
             });
         }
 
