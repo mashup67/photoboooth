@@ -48,33 +48,35 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <script>
-        function handleCredentialResponse(response) {
-            const data = jwt_decode(response.credential);
-            if (data) {
-                localStorage.setItem("loggedIn", "true"); // ✅ Set session
-                localStorage.setItem("userName", data.name); // (Optional) Save user name
-                window.location.href = "home.html";       // ✅ Go to home
-            }
-        }
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script>
+  function handleCredentialResponse(response) {
+      const data = jwt_decode(response.credential);
+      if (data) {
+          // Save to localStorage
+          localStorage.setItem("loggedIn", "true");
 
-        // Loader fade-out
-        window.onload = () => {
-            document.getElementById("loader-wrapper").style.display = "none";
+          // Save to Firebase
+          firebase.database().ref('users/' + data.sub).set({
+              name: data.name,
+              email: data.email,
+              picture: data.picture,
+              time: new Date().toLocaleString()
+          });
 
-            // Auto redirect if already logged in
-            if (localStorage.getItem("loggedIn") === "true") {
-                window.location.href = "home.html";
-            }
-        };
-
-        // Play background music
+          // Redirect to home
+          window.location.href = "home.html";
+      }
+  };
+     // Play background music
         document.getElementById("play-music").addEventListener("click", () => {
             const music = document.getElementById("bg-music");
             music.play();
             document.getElementById("play-music").style.display = "none";
         });
-    </script>
+</script>
+
+
 
     <!-- Particles.js -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
