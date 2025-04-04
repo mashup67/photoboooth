@@ -43,18 +43,25 @@
 
     <!-- Scripts -->
     <script src="script.js"></script>
-    <script>
-        // 🔐 Block access if not logged in
-        if (localStorage.getItem("loggedIn") !== "true") {
-            window.location.href = "index.html";
-        }
+  <script>
+    // ⛔ Block access if not logged in
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "index.html";
+    }
 
-        // 🚪 Logout functionality
-        function logout() {
-            localStorage.removeItem("loggedIn");
-            window.location.href = "index.html";
-        }
-    </script>
+    // Optional: Display a welcome message
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+        const h1 = document.querySelector("h1");
+        h1.innerHTML = `📸 Welcome, ${userName}! 📸`;
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+</script>
+
 
 </body>
 </html>
