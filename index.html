@@ -47,14 +47,16 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <script>
-        function handleCredentialResponse(response) {
-            const data = jwt_decode(response.credential);
-            if (data) {
-                localStorage.setItem("loggedIn", "true"); // ✅ Set login flag
-                window.location.href = "home.html";
-            }
+<script>
+    function handleCredentialResponse(response) {
+        const data = jwt_decode(response.credential);
+        if (data) {
+            localStorage.setItem("loggedIn", "true"); // ✅ Set session
+            window.location.href = "home.html";       // ✅ Go to home
         }
+    }
+</script>
+ 
 
         // Loader fade-out
         window.onload = () => {
