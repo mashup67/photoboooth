@@ -34,7 +34,7 @@ This is a fun and interactive **Photo Booth Web App** where users can:
 4. Choose a filter.
 5. Click **Generate Photostrip**.
 6. Pick background color and download.
-7. For Ghibli style: Pay ₹5, submit email, and receive your AI-transformed image!
+7. For Ghibli style: Pay ₹15, submit email, and receive your AI-transformed image!
 
 ---
 
