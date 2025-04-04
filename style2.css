@@ -36,6 +36,7 @@ body {
     }
 }
 /* 🌟 Particles container */
+/* 💖 Floating Particles Container */
 #particles-js {
     position: fixed;
     top: 0;
@@ -43,5 +44,37 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
+    background: #fff0f5; /* Light rose background */
+}
+
+/* ✨ Login Box Glow Animation */
+.login-box {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(255, 105, 180, 0.4);
+    animation: glow 2.5s ease-in-out infinite alternate;
+}
+
+/* 🌟 Glow Keyframes */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+    }
+}
+
+/* Center box */
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
 }
 
