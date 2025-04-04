@@ -1,113 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Photobooth</title>
-    <link rel="stylesheet" href="style2.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Photobooth</title>
+  <link rel="stylesheet" href="style2.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-
 <body>
 
-    <!-- Music Play Button -->
-    <button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
+  <!-- Music Play Button -->
+  <button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
 
-    <!-- Background particles -->
-    <div id="particles-js"></div>
+  <!-- Background particles -->
+  <div id="particles-js"></div>
 
-    <!-- Loader -->
-    <div id="loader-wrapper">
-        <div class="loader"></div>
+  <!-- Loader -->
+  <div id="loader-wrapper">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Login Box -->
+  <div class="login-box glow">
+    <h2>📸 LOGIN TO USE PHOTO BOOTH</h2>
+    <div id="g_id_onload"
+         data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
     </div>
-
-    <!-- Login Box -->
-    <div class="login-box glow">
-        <h2>📸 LOGIN TO USE PHOTO BOOTH</h2>
-        <div id="g_id_onload"
-             data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="outline"
-             data-text="signin_with"
-             data-size="large"
-             data-logo_alignment="left">
-        </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left">
     </div>
+  </div>
 
-    <!-- Background music -->
-    <audio id="bg-music" loop>
-        <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
-    </audio>
+  <!-- Background Music -->
+  <audio id="bg-music" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
+  </audio>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-<script>
-  function handleCredentialResponse(response) {
-      const data = jwt_decode(response.credential);
-      if (data) {
-          // Save to localStorage
-          localStorage.setItem("loggedIn", "true");
-
-          // Save to Firebase
-          firebase.database().ref('users/' + data.sub).set({
-              name: data.name,
-              email: data.email,
-              picture: data.picture,
-              time: new Date().toLocaleString()
-          });
-
-          // Redirect to home
-          window.location.href = "home.html";
+  <!-- Particle.js -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#ff66b2" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        move: { enable: true, speed: 1 }
+      },
+      interactivity: {
+        events: { onhover: { enable: true, mode: "repulse" } }
       }
-  };
-     // Play background music
-        document.getElementById("play-music").addEventListener("click", () => {
-            const music = document.getElementById("bg-music");
-            music.play();
-            document.getElementById("play-music").style.display = "none";
-        });
-</script>
-
-
-
-    <!-- Particles.js -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
-    authDomain: "photobooth-f1b2e.firebaseapp.com",
-    projectId: "photobooth-f1b2e",
-    storageBucket: "photobooth-f1b2e.appspot.com",
-    messagingSenderId: "14447345131",
-    appId: "1:14447345131:web:d3f3c979979d10cc366dae",
-    measurementId: "G-W7N7W08LWV",
-    databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // Save user info
-  window.saveUserToDatabase = function(user) {
-    const userRef = ref(db, 'users/' + user.sub); // sub is unique user ID from Google
-    set(userRef, {
-      name: user.name,
-      email: user.email,
-      picture: user.picture,
-      time: new Date().toISOString()
     });
-  };
-</script>
 
+    // Loader
+    window.onload = () => {
+      document.getElementById("loader-wrapper").style.display = "none";
+    };
+
+    // Music Play
+    document.getElementById("play-music").addEventListener("click", () => {
+      const music = document.getElementById("bg-music");
+      music.play();
+      document.getElementById("play-music").style.display = "none";
+    });
+  </script>
+
+  <!-- JWT Decode -->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+
+  <!-- Firebase + handleCredential (modular version) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
+      authDomain: "photobooth-f1b2e.firebaseapp.com",
+      projectId: "photobooth-f1b2e",
+      storageBucket: "photobooth-f1b2e.appspot.com",
+      messagingSenderId: "14447345131",
+      appId: "1:14447345131:web:d3f3c979979d10cc366dae",
+      measurementId: "G-W7N7W08LWV",
+      databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.handleCredentialResponse = function (response) {
+      const data = jwt_decode(response.credential);
+
+      if (data) {
+        // Save to localStorage
+        localStorage.setItem("loggedIn", "true");
+
+        // Save to Firebase
+        const userRef = ref(db, 'users/' + data.sub);
+        set(userRef, {
+          name: data.name,
+          email: data.email,
+          picture: data.picture,
+          time: new Date().toISOString()
+        });
+
+        // Redirect
+        window.location.href = "home.html";
+      }
+    };
+  </script>
 </body>
+</html>
