@@ -1,0 +1,91 @@
+/* ✅ Common Styling for Both Pages */
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #ffe6f2; /* 💖 Light Pink Background */
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #ff66b2;
+}
+
+/* ✅ Webcam Video */
+video {
+    width: 400px;
+    border: 5px solid #ff66b2;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* ✅ Buttons Styling */
+.buttons button, .filters button, #download {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.buttons button, #download {
+    background-color: #ff66b2;
+    color: white;
+}
+
+.filters button {
+    background-color: #ffd9e6;
+}
+
+#download:hover {
+    background-color: #e60073;
+}
+
+/* ✅ Photo Strip */
+#photo-strip {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#photo-strip img {
+    width: 100px;
+    margin: 5px;
+    border: 3px solid #ff66b2;
+    border-radius: 5px;
+}
+
+/* ✅ New Page Styling (Photo Strip Page) */
+.strip-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffe6f2; /* 💖 Same as Main Page */
+}
+
+/* ✅ Photo Strip Canvas */
+#stripCanvas {
+    border: 5px solid #ff66b2;
+    background: white;
+    display: block;
+    margin: auto;
+}
+
+/* ✅ Color Picker */
+.color-picker {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* ✅ Filters */
+.aesthetic-filter-1 { filter: brightness(1.1) contrast(1.2) saturate(1.3) hue-rotate(-10deg); }
+.aesthetic-filter-2 { filter: grayscale(20%) sepia(10%) brightness(0.9) contrast(1.1) blur(2px); }
+.aesthetic-filter-3 { filter: brightness(1.2) contrast(0.9) saturate(1.5) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3)); }
+.aesthetic-filter-4 { filter: brightness(0.8) contrast(1.3) saturate(0.8) invert(5%); }
+.aesthetic-filter-5 { filter: brightness(1.1) contrast(1.1) saturate(1.2) sepia(5%); }
+.aesthetic-filter-6 { filter: grayscale(10%) sepia(20%) brightness(1.1) contrast(1.2) saturate(1.1); }
+.aesthetic-filter-7 { filter: brightness(1.05) contrast(1.05) saturate(1.15) hue-rotate(-5deg) blur(0.5px); }
+.aesthetic-filter-8 { filter: brightness(2.5) contrast(1.4) saturate(0.8) drop-shadow(0px 0px 10px rgba(255,255,255,0.8)); }
+.aesthetic-filter-9 { filter: grayscale(100%); }
