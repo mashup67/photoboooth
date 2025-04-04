@@ -1,67 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photobooth Web App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photobooth Web App</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script> <!-- Needed for logout -->
 </head>
 <body>
 
-    <!-- Logout Button -->
-    <button onclick="logout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
+  <!-- Logout Button -->
+  <button onclick="logout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
 
-    <!-- Main Heading -->
-    <h1>📸 Photobooth Web App 📸</h1>
+  <!-- Main Heading -->
+  <h1>📸 Photobooth Web App 📸</h1>
 
-    <!-- Video Feed -->
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display: none;"></canvas>
+  <!-- Video Feed -->
+  <video id="video" autoplay></video>
+  <canvas id="canvas" style="display: none;"></canvas>
 
-    <!-- Control Buttons -->
-    <div class="buttons">
-        <button id="capture" class="round-button">Capture Photo</button>
-        <button id="save" class="round-button">Save Image</button>
-        <button id="generate-strip" class="round-button">Generate Photostrip</button>
-    </div>
+  <!-- Control Buttons -->
+  <div class="buttons">
+    <button id="capture" class="round-button">Capture Photo</button>
+    <button id="save" class="round-button">Save Image</button>
+    <button id="generate-strip" class="round-button">Generate Photostrip</button>
+  </div>
 
-    <!-- Filter Buttons -->
-    <div class="filters">
-        <button onclick="applyFilter('aesthetic-filter-1')" class="round-button">Filter 1</button>
-        <button onclick="applyFilter('aesthetic-filter-2')" class="round-button">Filter 2</button>
-        <button onclick="applyFilter('aesthetic-filter-3')" class="round-button">Filter 3</button>
-        <button onclick="applyFilter('aesthetic-filter-4')" class="round-button">Filter 4</button>
-        <button onclick="applyFilter('aesthetic-filter-5')" class="round-button">Filter 5</button>
-        <button onclick="applyFilter('aesthetic-filter-6')" class="round-button">Filter 6</button>
-        <button onclick="applyFilter('aesthetic-filter-7')" class="round-button">Filter 7</button>
-        <button onclick="applyFilter('aesthetic-filter-8')" class="round-button">Filter 8</button>
-        <button onclick="applyFilter('aesthetic-filter-9')" class="round-button">Filter 9</button>
-    </div>
+  <!-- Filter Buttons -->
+  <div class="filters">
+    <button onclick="applyFilter('aesthetic-filter-1')" class="round-button">Filter 1</button>
+    <button onclick="applyFilter('aesthetic-filter-2')" class="round-button">Filter 2</button>
+    <button onclick="applyFilter('aesthetic-filter-3')" class="round-button">Filter 3</button>
+    <button onclick="applyFilter('aesthetic-filter-4')" class="round-button">Filter 4</button>
+    <button onclick="applyFilter('aesthetic-filter-5')" class="round-button">Filter 5</button>
+    <button onclick="applyFilter('aesthetic-filter-6')" class="round-button">Filter 6</button>
+    <button onclick="applyFilter('aesthetic-filter-7')" class="round-button">Filter 7</button>
+    <button onclick="applyFilter('aesthetic-filter-8')" class="round-button">Filter 8</button>
+    <button onclick="applyFilter('aesthetic-filter-9')" class="round-button">Filter 9</button>
+  </div>
 
-    <!-- Photo Strip Display -->
-    <div id="photo-strip"></div>
+  <!-- Photo Strip Display -->
+  <div id="photo-strip"></div>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
+  <!-- Your main photobooth JS -->
+  <script src="script.js"></script>
+
   <script>
     // ⛔ Block access if not logged in
     if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "index.html";
+      window.location.href = "index.html";
     }
 
-    // Optional: Display a welcome message
+    // Optional welcome message
     const userName = localStorage.getItem("userName");
     if (userName) {
-        const h1 = document.querySelector("h1");
-        h1.innerHTML = `📸 Welcome, ${userName}! 📸`;
+      const h1 = document.querySelector("h1");
+      h1.innerHTML = `📸 Welcome, ${userName}! 📸`;
     }
 
+    // ✅ Full logout including Google session
     function logout() {
-        localStorage.clear();
-        window.location.href = "index.html";
-    }
-</script>
+      // Clear local storage
+      localStorage.clear();
 
+      // End Google auto session
+      google.accounts.id.disableAutoSelect();
+
+      // Redirect to login page
+      window.location.href = "index.html";
+    }
+  </script>
 
 </body>
 </html>
