@@ -34,5 +34,12 @@
     <div id="photo-strip"></div>
 
     <script src="script.js"></script>
+    <script>
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "login.html"; // ⛔ Block direct access
+    }
+</script>
+
+
 </body>
 </html>
