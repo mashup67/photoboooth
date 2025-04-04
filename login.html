@@ -1,36 +1,44 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <h2>Login to use Photobooth</h2>
-  <div id="g_id_onload"
-       data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
-       data-context="signin"
-       data-ux_mode="popup"
-       data-callback="handleCredentialResponse"
-       data-auto_prompt="false"></div>
-  <div class="g_id_signin"
-       data-type="standard"
-       data-shape="rectangular"
-       data-theme="outline"
-       data-text="signin_with"
-       data-size="large"
-       data-logo_alignment="left"></div>
+<body class="login-body">
+
+  <div class="login-box">
+    <h2>LOGIN TO USE PHOTO BOOTH 📸</h2>
+    
+    <div id="g_id_onload"
+        data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="signin_with"
+        data-size="large"
+        data-logo_alignment="center">
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script>
     function handleCredentialResponse(response) {
       const data = jwt_decode(response.credential);
-      alert("Welcome " + data.name + "!");
-      localStorage.setItem("loggedIn", true);
+      localStorage.setItem("user", JSON.stringify(data));
       window.location.href = "index.html";
     }
   </script>
+
 </body>
 </html>
+
