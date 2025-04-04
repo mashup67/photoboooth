@@ -63,12 +63,12 @@
   <script>
     // Protect admin.html
     if (localStorage.getItem("isAdmin") !== "true") {
-      window.location.href = "admin-login.html";
+      window.location.href = "admin.html";
     }
 
     function adminLogout() {
       localStorage.removeItem("isAdmin");
-      window.location.href = "admin-login.html";
+      window.location.href = "admin.html";
     }
   </script>
 
