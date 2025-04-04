@@ -8,11 +8,16 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-    <!-- 🌟 Particles Background -->
+    <!-- Background particles -->
     <div id="particles-js"></div>
 
-    <!-- 💖 Login Box -->
-    <div class="login-box">
+    <!-- Loader -->
+    <div id="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Login Box -->
+    <div class="login-box glow">
         <h2>📸 LOGIN TO USE PHOTO BOOTH</h2>
         <div id="g_id_onload"
              data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
@@ -31,7 +36,12 @@
         </div>
     </div>
 
-    <!-- JWT Decoder -->
+    <!-- Background music (hidden player) -->
+    <audio autoplay loop hidden>
+        <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script>
         function handleCredentialResponse(response) {
@@ -40,84 +50,27 @@
                 window.location.href = "home.html";
             }
         }
-    </script>
 
-    <!-- 🎉 Particles Script -->
+        // Loader fade-out
+        window.onload = () => {
+            document.getElementById("loader-wrapper").style.display = "none";
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-particlesJS("particles-js", {
-        "particles": {
-            "number": { "value": 70, "density": { "enable": true, "value_area": 800 }},
-            "color": { "value": ["#ff66b2", "#ffffff", "#ffd6e7"] },
-            "shape": {
-                "type": ["circle", "star", "edge"],
-                "stroke": { "width": 0, "color": "#000000" },
-                "polygon": { "nb_sides": 5 }
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#ff66b2" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5 },
+                size: { value: 3 },
+                move: { enable: true, speed: 1 }
             },
-            "opacity": {
-                "value": 0.6,
-                "random": true,
-                "anim": {
-                    "enable": true,
-                    "speed": 1,
-                    "opacity_min": 0.2,
-                    "sync": false
-                }
-            },
-            "size": {
-                "value": 5,
-                "random": true,
-                "anim": {
-                    "enable": true,
-                    "speed": 4,
-                    "size_min": 0.3,
-                    "sync": false
-                }
-            },
-            "line_linked": {
-                "enable": true,
-                "distance": 120,
-                "color": "#ff99cc",
-                "opacity": 0.4,
-                "width": 1
-            },
-            "move": {
-                "enable": true,
-                "speed": 2,
-                "direction": "none",
-                "random": false,
-                "straight": false,
-                "out_mode": "out",
-                "bounce": false
+            interactivity: {
+                events: { onhover: { enable: true, mode: "repulse" } }
             }
-        },
-        "interactivity": {
-            "detect_on": "canvas",
-            "events": {
-                "onhover": { "enable": true, "mode": "grab" },
-                "onclick": { "enable": true, "mode": "push" },
-                "resize": true
-            },
-            "modes": {
-                "grab": {
-                    "distance": 140,
-                    "line_linked": { "opacity": 0.6 }
-                },
-                "bubble": {
-                    "distance": 200,
-                    "size": 10,
-                    "duration": 2,
-                    "opacity": 0.8,
-                    "speed": 3
-                },
-                "repulse": { "distance": 100, "duration": 0.4 },
-                "push": { "particles_nb": 4 },
-                "remove": { "particles_nb": 2 }
-            }
-        },
-        "retina_detect": true
-    });
-</script>
-
+        });
+    </script>
 </body>
 </html>
