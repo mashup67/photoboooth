@@ -59,18 +59,5 @@
     </thead>
     <tbody></tbody>
   </table>
-
-  <script>
-    // Protect admin.html
-    if (localStorage.getItem("isAdmin") !== "true") {
-      window.location.href = "admin.html";
-    }
-
-    function adminLogout() {
-      localStorage.removeItem("isAdmin");
-      window.location.href = "admin.html";
-    }
-  </script>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
