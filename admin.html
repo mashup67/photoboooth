@@ -30,9 +30,23 @@
       width: 40px;
       border-radius: 50%;
     }
+    .logout-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 10px;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+
+  <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
+
   <h1>📋 Signed-in Users</h1>
   <table id="userTable">
     <thead>
@@ -46,42 +60,17 @@
     <tbody></tbody>
   </table>
 
+  <script>
+    // Protect admin.html
+    if (localStorage.getItem("isAdmin") !== "true") {
+      window.location.href = "admin-login.html";
+    }
+
+    function adminLogout() {
+      localStorage.removeItem("isAdmin");
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
-      authDomain: "photobooth-f1b2e.firebaseapp.com",
-      projectId: "photobooth-f1b2e",
-      storageBucket: "photobooth-f1b2e.appspot.com",
-      messagingSenderId: "14447345131",
-      appId: "1:14447345131:web:d3f3c979979d10cc366dae",
-      measurementId: "G-W7N7W08LWV",
-      databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const userRef = ref(db, 'users');
-
-    const tbody = document.querySelector("#userTable tbody");
-
-    onValue(userRef, (snapshot) => {
-      tbody.innerHTML = ''; // Clear existing
-      snapshot.forEach((childSnapshot) => {
-        const user = childSnapshot.val();
-        const row = `
-          <tr>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-            <td>${new Date(user.time).toLocaleString()}</td>
-            <td><img src="${user.picture}" alt="Profile Pic"></td>
-          </tr>
-        `;
-        tbody.innerHTML += row;
-      });
-    });
-  </script>
-</body>
-</html>
