@@ -1,63 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin | User Sign-ins</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f0f0f0;
-    }
-    h1 {
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    th {
-      background: #e91e63;
-      color: white;
-    }
-    img {
-      width: 40px;
-      border-radius: 50%;
-    }
-    .logout-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 10px;
-      background-color: #e91e63;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Photobooth</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js"></script>
 </head>
 <body>
 
-  <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
+    <!-- Logout Button -->
+    <button onclick="confirmLogout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
 
-  <h1>📋 Signed-in Users</h1>
-  <table id="userTable">
-    <thead>
-      <tr>
-        <th>👤 Name</th>
-        <th>📧 Email</th>
-        <th>🕒 Time</th>
-        <th>🖼️ Picture</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    <!-- Main Heading -->
+    <h1>📊 Admin Panel: Logged-in Users 📊</h1>
+
+    <!-- Users List -->
+    <table id="users-table" border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Login Time</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Logout Confirmation Popup -->
+    <div id="logout-popup" class="popup">
+        <div class="popup-content">
+            <p>Are you sure you want to log out?</p>
+            <button onclick="logout()">✅ Yes</button>
+            <button onclick="closePopup()">❌ No</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // ⛔ Restrict access to only admin email
+        const adminEmail = "hasansyedmaaz@gmail.com";
+        const userEmail = localStorage.getItem("userEmail");
+
+        if (!userEmail || userEmail !== adminEmail) {
+            alert("🚫 Access Denied: Only admins can access this page!");
+            window.location.href = "index.html";
+        }
+
+        // 🚪 Custom Logout Confirmation
+        function confirmLogout() {
+            document.getElementById("logout-popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("logout-popup").style.display = "none";
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+
+        // 🔥 Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
+            authDomain: "photobooth-f1b2e.firebaseapp.com",
+            databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com",
+            projectId: "photobooth-f1b2e",
+            storageBucket: "photobooth-f1b2e.appspot.com",
+            messagingSenderId: "14447345131",
+            appId: "1:14447345131:web:d3f3c979979d10cc366dae"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 📜 Fetch Users from Firebase
+        function fetchUsers() {
+            const usersTable = document.querySelector("#users-table tbody");
+
+            db.ref("users").once("value", (snapshot) => {
+                usersTable.innerHTML = ""; // Clear existing data
+
+                snapshot.forEach((childSnapshot) => {
+                    const user = childSnapshot.val();
+                    const row = `<tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${new Date(user.time).toLocaleString()}</td>
+                    </tr>`;
+                    usersTable.innerHTML += row;
+                });
+            });
+        }
+
+        fetchUsers(); // Call function on page load
+    </script>
+
+    <!-- Styles for Logout Popup -->
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+        }
+        .popup-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+
+</body>
+</html>
