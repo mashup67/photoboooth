@@ -8,6 +8,16 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+<script>
+    function handleCredentialResponse(response) {
+        const data = jwt_decode(response.credential);
+        if (data) {
+            localStorage.setItem("loggedIn", "true"); // ✅ Mark user as logged in
+            window.location.href = "home.html";
+        }
+    }
+</script>
+
     <!-- Music Play Button -->
     <button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
 
