@@ -47,20 +47,24 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-<script>
-    function handleCredentialResponse(response) {
-        const data = jwt_decode(response.credential);
-        if (data) {
-            localStorage.setItem("loggedIn", "true"); // ✅ Set session
-            window.location.href = "home.html";       // ✅ Go to home
+    <script>
+        function handleCredentialResponse(response) {
+            const data = jwt_decode(response.credential);
+            if (data) {
+                localStorage.setItem("loggedIn", "true"); // ✅ Set session
+                localStorage.setItem("userName", data.name); // (Optional) Save user name
+                window.location.href = "home.html";       // ✅ Go to home
+            }
         }
-    }
-</script>
- 
 
         // Loader fade-out
         window.onload = () => {
             document.getElementById("loader-wrapper").style.display = "none";
+
+            // Auto redirect if already logged in
+            if (localStorage.getItem("loggedIn") === "true") {
+                window.location.href = "home.html";
+            }
         };
 
         // Play background music
@@ -73,20 +77,3 @@
 
     <!-- Particles.js -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        particlesJS("particles-js", {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: "#ff66b2" },
-                shape: { type: "circle" },
-                opacity: { value: 0.5 },
-                size: { value: 3 },
-                move: { enable: true, speed: 1 }
-            },
-            interactivity: {
-                events: { onhover: { enable: true, mode: "repulse" } }
-            }
-        });
-    </script>
-</body>
-</html>
