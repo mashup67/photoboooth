@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Photobooth</title>
-  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="style2.css" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -73,6 +73,11 @@
       music.play();
       document.getElementById("play-music").style.display = "none";
     });
+
+    // Redirect if already logged in
+    if (localStorage.getItem("loggedIn") === "true") {
+      window.location.href = "home.html";
+    }
   </script>
 
   <!-- JWT Decode -->
@@ -101,11 +106,9 @@
       const data = jwt_decode(response.credential);
 
       if (data) {
-        // Save to localStorage
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("userEmail", data.email);
 
-        // Save to Firebase
         const userRef = ref(db, 'users/' + data.sub);
         set(userRef, {
           name: data.name,
@@ -114,7 +117,6 @@
           time: new Date().toISOString()
         });
 
-        // Redirect
         window.location.href = "home.html";
       }
     };
