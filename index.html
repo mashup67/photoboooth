@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style2.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
+
 <body>
 
     <!-- Music Play Button -->
@@ -77,3 +78,34 @@
 
     <!-- Particles.js -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
+    authDomain: "photobooth-f1b2e.firebaseapp.com",
+    projectId: "photobooth-f1b2e",
+    storageBucket: "photobooth-f1b2e.appspot.com",
+    messagingSenderId: "14447345131",
+    appId: "1:14447345131:web:d3f3c979979d10cc366dae",
+    measurementId: "G-W7N7W08LWV",
+    databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Save user info
+  window.saveUserToDatabase = function(user) {
+    const userRef = ref(db, 'users/' + user.sub); // sub is unique user ID from Google
+    set(userRef, {
+      name: user.name,
+      email: user.email,
+      picture: user.picture,
+      time: new Date().toISOString()
+    });
+  };
+</script>
+
+</body>
