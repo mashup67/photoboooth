@@ -89,4 +89,25 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+.music-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ff66b2;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 1000;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 102, 178, 0.6); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 102, 178, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 102, 178, 0); }
+}
+
 
