@@ -8,6 +8,10 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+    <!-- 🌟 Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- 💖 Login Box -->
     <div class="login-box">
         <h2>📸 LOGIN TO USE PHOTO BOOTH</h2>
         <div id="g_id_onload"
@@ -27,6 +31,7 @@
         </div>
     </div>
 
+    <!-- JWT Decoder -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script>
         function handleCredentialResponse(response) {
@@ -35,6 +40,42 @@
                 window.location.href = "home.html";
             }
         }
+    </script>
+
+    <!-- 🎉 Particles Script -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 60, "density": { "enable": true, "value_area": 800 }},
+                "color": { "value": "#ff66b2" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5 },
+                "size": { "value": 4, "random": true },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ff99cc",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "out_mode": "out"
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                }
+            },
+            "retina_detect": true
+        });
     </script>
 </body>
 </html>
