@@ -8,8 +8,8 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-<!-- Music Play Button -->
-<button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
+    <!-- Music Play Button -->
+    <button id="play-music" class="music-btn">🔊 Click to Enable Music</button>
 
     <!-- Background particles -->
     <div id="particles-js"></div>
@@ -40,10 +40,9 @@
     </div>
 
     <!-- Background music (hidden player) -->
-  <audio id="bg-music" loop>
-    <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
-</audio>
-
+    <audio id="bg-music" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
@@ -59,7 +58,16 @@
         window.onload = () => {
             document.getElementById("loader-wrapper").style.display = "none";
         };
+
+        // Music playback
+        document.getElementById("play-music").addEventListener("click", () => {
+            const music = document.getElementById("bg-music");
+            music.play();
+            document.getElementById("play-music").style.display = "none";
+        });
     </script>
+
+    <!-- Particles.js -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
         particlesJS("particles-js", {
