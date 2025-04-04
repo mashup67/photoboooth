@@ -7,26 +7,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- Logout Button -->
     <button onclick="logout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
 
-<script>
-    function logout() {
-        localStorage.removeItem("loggedIn");
-        window.location.href = "index.html";
-    }
-</script>
-
+    <!-- Main Heading -->
     <h1>📸 Photobooth Web App 📸</h1>
 
+    <!-- Video Feed -->
     <video id="video" autoplay></video>
     <canvas id="canvas" style="display: none;"></canvas>
 
+    <!-- Control Buttons -->
     <div class="buttons">
         <button id="capture" class="round-button">Capture Photo</button>
         <button id="save" class="round-button">Save Image</button>
         <button id="generate-strip" class="round-button">Generate Photostrip</button>
     </div>
 
+    <!-- Filter Buttons -->
     <div class="filters">
         <button onclick="applyFilter('aesthetic-filter-1')" class="round-button">Filter 1</button>
         <button onclick="applyFilter('aesthetic-filter-2')" class="round-button">Filter 2</button>
@@ -39,15 +38,23 @@
         <button onclick="applyFilter('aesthetic-filter-9')" class="round-button">Filter 9</button>
     </div>
 
+    <!-- Photo Strip Display -->
     <div id="photo-strip"></div>
 
+    <!-- Scripts -->
     <script src="script.js"></script>
     <script>
-    if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "index.html"; // ⛔ Block direct access
-    }
-</script>
+        // 🔐 Block access if not logged in
+        if (localStorage.getItem("loggedIn") !== "true") {
+            window.location.href = "index.html";
+        }
 
+        // 🚪 Logout functionality
+        function logout() {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "index.html";
+        }
+    </script>
 
 </body>
 </html>
