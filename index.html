@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,38 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photobooth Web App</title>
     <link rel="stylesheet" href="style.css">
-
-    <!-- ✅ Google Sign-In SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        // Redirect if not logged in
+        if (!localStorage.getItem("loggedIn")) {
+            window.location.href = "login.html";
+        }
+    </script>
 </head>
 <body>
-
     <h1>📸 Photobooth Web App 📸</h1>
-
-    <!-- ✅ Google Sign-In Button -->
-    <div id="g_id_onload"
-         data-client_id="59701120388-qi9i2i5av5ajf17uhrgg6tagr1n61q20.apps.googleusercontent.com"
-         data-context="signin"
-         data-ux_mode="popup"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
-    </div>
-    <div class="g_id_signin"
-         data-type="standard"
-         data-shape="rectangular"
-         data-theme="outline"
-         data-text="signin_with"
-         data-size="large"
-         data-logo_alignment="left">
-    </div>
 
     <video id="video" autoplay></video>
     <canvas id="canvas" style="display: none;"></canvas>
     
     <div class="buttons">
-        <button id="capture">Capture Photo</button>
-        <button id="save">Save Image</button>
-        <button id="generate-strip">Generate Photostrip</button>
+        <button id="capture" class="icon-button capture-btn"></button>
+        <button id="save" class="icon-button save-btn"></button>
+        <button id="generate-strip" class="icon-button strip-btn"></button>
     </div>
 
     <div class="filters">
@@ -53,19 +39,6 @@
 
     <div id="photo-strip"></div>
 
-    <!-- ✅ Handle Sign-In Response -->
-    <script>
-        function handleCredentialResponse(response) {
-            const data = jwt_decode(response.credential);
-            alert("Welcome " + data.name + "!");
-            // You can now use: data.email, data.name, data.picture, etc.
-        }
-    </script>
-
-    <!-- ✅ Load JWT Decode Library -->
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
     <script src="script.js"></script>
-
 </body>
 </html>
