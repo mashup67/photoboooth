@@ -138,6 +138,14 @@ stripButton.addEventListener("click", () => {
     return;
   }
 
-  localStorage.setItem("capturedImages", JSON.stringify(capturedPhotos.map(img => img.src)));
-  window.open("photo-style.html", "_blank");
+  // Save photos to localStorage
+  const imgData = capturedPhotos.map(img => img.src);
+  localStorage.setItem("capturedImages", JSON.stringify(imgData));
+
+  // Save user email if needed
+  const email = localStorage.getItem("userEmail") || "unknown_user";
+  localStorage.setItem("userEmail", email);
+
+  // Redirect to photobooth.html
+  window.location.href = "photobooth.html";
 });
