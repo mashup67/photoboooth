@@ -6,25 +6,26 @@
   <title>Photobooth Web App</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 </head>
 <body>
   <header>
     <h1>📸 Photobooth Web App 💖</h1>
     <button id="logoutBtn">📕 Logout</button>
   </header>
-  <div class="main-camera-section">
-  <div class="camera-box">
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-  </div>
 
-  <div class="thumbnails-box" id="thumbnails">
-    <!-- Photos will appear here -->
+  <div class="main-camera-section">
+    <div class="camera-box">
+      <video id="video" autoplay></video>
+      <canvas id="canvas" style="display: none;"></canvas>
+    </div>
+
+    <div class="thumbnails-box" id="thumbnails">
+      <!-- Captured thumbnails will show here -->
+    </div>
   </div>
-</div>
 
   <div class="controls">
     <button id="captureBtn">📸 Take Photo</button>
@@ -46,7 +47,6 @@
       <button class="filter-btn" data-filter="hue-rotate(90deg)">Hue</button>
     </div>
   </div>
-</section>
 
   <section id="photo-strip"></section>
 
@@ -67,58 +67,38 @@
       window.location.href = "index.html";
     }
 
-    // Show user's name
+    // Set user's name
     const userName = localStorage.getItem("userName");
     if (userName) {
       document.querySelector("h1").innerText = `📸 Welcome, ${userName}! 📸`;
     }
 
-    // Logout popup controls
+    // Logout popup
     function confirmLogout() {
       document.getElementById("logout-popup").style.display = "block";
     }
-
     function closePopup() {
       document.getElementById("logout-popup").style.display = "none";
     }
-
     function logout() {
       localStorage.clear();
       window.location.href = "index.html";
     }
 
-    // Redirect to payment
-    function redirectToPayment() {
-      window.location.href = "payment.html";
-    }
-
     // Button handlers
     document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
-    document.getElementById("ghibliUploadBtn").addEventListener("click", redirectToPayment);
-    document.getElementById("download").addEventListener("click", downloadPhotostrip);
-    document.getElementById("downloadGIF").addEventListener("click", generateGifFromStrip);
+    document.getElementById("ghibliUploadBtn").addEventListener("click", () => {
+      window.location.href = "payment.html";
+    });
     document.getElementById("retake").addEventListener("click", () => location.reload());
-  </script>
 
-  <style>
-    .popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      text-align: center;
+    // Safe optional bindings (comment if download buttons aren't needed)
+    if (document.getElementById("download")) {
+      document.getElementById("download").addEventListener("click", downloadPhotostrip);
     }
-    .popup-content button {
-      margin: 10px;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
+    if (document.getElementById("downloadGIF")) {
+      document.getElementById("downloadGIF").addEventListener("click", generateGifFromStrip);
     }
-  </style>
+  </script>
 </body>
 </html>
