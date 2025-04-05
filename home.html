@@ -65,6 +65,18 @@
 
   <!-- Heading -->
   <h1>📸 Photobooth Web App 📸</h1>
+  <div class="camera-box">
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" style="display: none;"></canvas>
+</div>
+
+<div class="controls">
+  <button id="capture">📷 Capture</button>
+  <button id="generate-strip">🎞️ Generate Strip</button>
+</div>
+
+<div id="photo-strip"></div>
+
 
   <!-- Content -->
   <div class="container">
