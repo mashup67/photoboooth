@@ -4,124 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photobooth Web App</title>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-database-compat.js"></script>
-
-  <link rel="stylesheet" href="style.css"/>
-  <style>
-    body {
-      background: radial-gradient(circle, #ffd6e8, #fff);
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-    }
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 40px;
-      margin-top: 60px;
-      flex-wrap: wrap;
-    }
-    #photo-strip-preview {
-      background: white;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    .controls {
-      max-width: 300px;
-    }
-    .controls h3 {
-      margin-bottom: 10px;
-    }
-    .controls button {
-      display: block;
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 10px;
-      border: 1px solid #000;
-      background: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .controls button:hover {
-      background: #ffebf0;
-    }
-    .download-buttons {
-      margin-top: 20px;
-    }
-    .download-buttons button {
-      margin: 5px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 </head>
 <body>
+  <header>
+    <h1>📸 Photobooth Web App 💖</h1>
+    <button id="logoutBtn">📕 Logout</button>
+  </header>
 
-  <!-- Logout Button -->
-  <button onclick="confirmLogout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
-
-  <!-- Heading -->
-  <h1>📸 Photobooth Web App 📸</h1>
-  <div class="camera-box">
-  <video id="video" autoplay playsinline></video>
-  <canvas id="canvas" style="display: none;"></canvas>
-</div>
-
-<div class="controls">
-  <button id="capture">📷 Capture</button>
-  <button id="generate-strip">🎞️ Generate Strip</button>
-</div>
-
-<div id="photo-strip"></div>
-
-
-  <!-- Content -->
-  <div class="container">
-    <!-- Strip Preview -->
-    <div id="photo-strip-preview">
-      <div id="photo-strip"></div>
-      <div class="download-buttons">
-        <button onclick="downloadStrip()">⬇️ Download Photo Strip</button>
-        <button onclick="downloadGif()">⬇️ Download GIF</button>
-        <button onclick="resetStrip()">🔁 Take New Photos</button>
+  <main class="main-container">
+    <section class="camera-section">
+      <div class="camera-box">
+        <video id="video" autoplay playsinline></video>
       </div>
-    </div>
 
-    <!-- Filter/Sticker Controls -->
-    <div class="controls">
-      <h3>🎨 Customize your strip</h3>
+      <div class="controls">
+        <button id="captureBtn">📸 Take Photo</button>
+        <button id="generateBtn">🖼️ Generate Photo Strip</button
+        <button id="retake">🔁 Take New Photos</button>
+        <button id="ghibliUploadBtn">✨ Ghibli Strip (₹15)</button>
+      </div>
 
-      <strong>Frame Colour</strong>
-      <button onclick="setFrameColor('white')">White</button>
-      <button onclick="setFrameColor('black')">Black</button>
-      <button onclick="setFrameColor('pink')">Pink</button>
-      <button onclick="setFrameColor('blue')">Blue</button>
-      <button onclick="setFrameColor('purple')">Purple</button>
-      <button onclick="setFrameColor('green')">Green</button>
-      <button onclick="setFrameColor('yellow')">Yellow</button>
-      <button onclick="setFrameColor('maroon')">Maroon</button>
-      <button onclick="setFrameColor('burgundy')">Burgundy</button>
+      <div class="filter-container">
+        <h3>🌈 Filters</h3>
+        <div class="filter-options">
+          <button class="filter-btn" data-filter="none">No Filter</button>
+          <button class="filter-btn" data-filter="grayscale(100%)">Grayscale</button>
+          <button class="filter-btn" data-filter="sepia(100%)">Sepia</button>
+          <button class="filter-btn" data-filter="invert(1)">Invert</button>
+          <button class="filter-btn" data-filter="contrast(150%)">Contrast+</button>
+          <button class="filter-btn" data-filter="brightness(130%)">Bright</button>
+          <button class="filter-btn" data-filter="blur(2px)">Blur</button>
+          <button class="filter-btn" data-filter="hue-rotate(90deg)">Hue</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-      <br><br>
-      <strong>Stickers</strong>
-      <button onclick="setSticker('none')">No Stickers</button>
-      <button onclick="setSticker('girlypop')">Girlypop</button>
-      <button onclick="setSticker('cute')">Cute</button>
-      <button onclick="setSticker('mofucand')">Mofucand</button>
-      <button onclick="setSticker('miffy')">Miffy</button>
-      <button onclick="setSticker('nct')">NCT Dream</button>
-
-      <br><br>
-      <button onclick="redirectToPayment()">🌸 Ghibli Strip (₹15)</button>
-    </div>
-  </div>
-
-  <!-- Hidden video & canvas -->
-  <video id="video" autoplay style="display:none;"></video>
-  <canvas id="canvas" style="display:none;"></canvas>
+  <section id="photo-strip"></section>
 
   <!-- Logout Popup -->
   <div id="logout-popup" class="popup">
@@ -135,15 +59,18 @@
   <script src="script.js"></script>
 
   <script>
+    // Redirect to login if not logged in
     if (localStorage.getItem("loggedIn") !== "true") {
       window.location.href = "index.html";
     }
 
+    // Show user's name
     const userName = localStorage.getItem("userName");
     if (userName) {
       document.querySelector("h1").innerText = `📸 Welcome, ${userName}! 📸`;
     }
 
+    // Logout popup controls
     function confirmLogout() {
       document.getElementById("logout-popup").style.display = "block";
     }
@@ -157,24 +84,17 @@
       window.location.href = "index.html";
     }
 
+    // Redirect to payment
     function redirectToPayment() {
       window.location.href = "payment.html";
     }
 
-    function downloadStrip() {
-      // Your script.js logic should handle this
-      downloadPhotostrip();
-    }
-
-    function downloadGif() {
-      // Your script.js logic should handle this
-      generateGifFromStrip();
-    }
-
-    function resetStrip() {
-      // Reset UI / strip
-      location.reload();
-    }
+    // Button handlers
+    document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
+    document.getElementById("ghibliUploadBtn").addEventListener("click", redirectToPayment);
+    document.getElementById("download").addEventListener("click", downloadPhotostrip);
+    document.getElementById("downloadGIF").addEventListener("click", generateGifFromStrip);
+    document.getElementById("retake").addEventListener("click", () => location.reload());
   </script>
 
   <style>
@@ -197,6 +117,5 @@
       cursor: pointer;
     }
   </style>
-
 </body>
 </html>
