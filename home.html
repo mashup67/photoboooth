@@ -15,10 +15,17 @@
     <h1>📸 Photobooth Web App 💖</h1>
     <button id="logoutBtn">📕 Logout</button>
   </header>
+  <div class="main-camera-section">
   <div class="camera-box">
-  <video id="video" autoplay></video>
-  <canvas id="canvas" style="display: none;"></canvas>
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+  </div>
+
+  <div class="thumbnails-box" id="thumbnails">
+    <!-- Photos will appear here -->
+  </div>
 </div>
+
   <div class="controls">
     <button id="captureBtn">📸 Take Photo</button>
     <button id="generateBtn">🖼️ Generate Photo Strip</button>
