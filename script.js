@@ -48,6 +48,43 @@ captureButton.addEventListener("click", () => {
     alert("Max 4 photos allowed!");
     return;
   }
+  const timerCaptureButton = document.getElementById("autoCaptureBtn");
+
+timerCaptureButton.addEventListener("click", () => {
+  if (capturedPhotos.length > 0) {
+    if (!confirm("Old photos will be cleared. Continue?")) return;
+    capturedPhotos = [];
+    document.getElementById("thumbnails").innerHTML = "";
+  }
+
+  let count = 0;
+  const interval = setInterval(() => {
+    if (count >= 4) {
+      clearInterval(interval);
+      return;
+    }
+
+    // Capture logic (same as manual)
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.filter = currentFilter;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const dataUrl = canvas.toDataURL("image/png");
+
+    const thumb = new Image();
+    thumb.src = dataUrl;
+    document.getElementById("thumbnails").appendChild(thumb);
+
+    const img = new Image();
+    img.src = dataUrl;
+    capturedPhotos.push(img);
+
+    count++;
+  }, 3000); // 3 sec gap
+});
+
+
 
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
