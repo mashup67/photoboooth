@@ -121,6 +121,51 @@
             cursor: pointer;
         }
     </style>
+<!-- Existing Scripts -->
+<script src="script.js"></script>
+
+<!-- Firebase Strip Upload & Database Store -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getStorage, ref as storageRef, uploadString } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+  import { getDatabase, ref as dbRef, set, push } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET.appspot.com",
+    databaseURL: "https://YOUR_BUCKET.firebaseio.com"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const storage = getStorage(app);
+  const database = getDatabase(app);
+
+  // Function to save strip image
+  window.savePhotoStrip = async function (base64Image) {
+    const email = localStorage.getItem("userEmail") || "unknown_user";
+    const fileName = `strip_${Date.now()}.png`;
+
+    const storagePath = `photo_strips/${email}/${fileName}`;
+    const imageRef = storageRef(storage, storagePath);
+    await uploadString(imageRef, base64Image, 'data_url');
+
+    const dbPath = dbRef(database, "payments/" + email.replace('.', '_'));
+    const newEntry = push(dbPath);
+    await set(newEntry, {
+      email,
+      fileName,
+      imageUrl: `gs://${firebaseConfig.storageBucket}/${storagePath}`,
+      timestamp: new Date().toISOString(),
+      paid: true
+    });
+
+    alert("✅ Strip uploaded and linked to user payment!");
+  }
+</script>
+</body>
+</html>
 
 </body>
 </html>
