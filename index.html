@@ -83,43 +83,47 @@
   <!-- JWT Decode -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
-  <!-- Firebase + handleCredential (modular version) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
-      authDomain: "photobooth-f1b2e.firebaseapp.com",
-      projectId: "photobooth-f1b2e",
-      storageBucket: "photobooth-f1b2e.appspot.com",
-      messagingSenderId: "14447345131",
-      appId: "1:14447345131:web:d3f3c979979d10cc366dae",
-      measurementId: "G-W7N7W08LWV",
-      databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
+    authDomain: "photobooth-f1b2e.firebaseapp.com",
+    projectId: "photobooth-f1b2e",
+    storageBucket: "photobooth-f1b2e.appspot.com",
+    messagingSenderId: "14447345131",
+    appId: "1:14447345131:web:d3f3c979979d10cc366dae",
+    measurementId: "G-W7N7W08LWV",
+    databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    window.handleCredentialResponse = function (response) {
-      const data = jwt_decode(response.credential);
+  // Expose this globally
+  window.handleCredentialResponse = function (response) {
+    const data = jwt_decode(response.credential);
+    console.log("Google data:", data);
 
-      if (data) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("userEmail", data.email);
+    if (data) {
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("userEmail", data.email);
 
-        const userRef = ref(db, 'users/' + data.sub);
-        set(userRef, {
-          name: data.name,
-          email: data.email,
-          picture: data.picture,
-          time: new Date().toISOString()
-        });
-
+      const userRef = ref(db, 'users/' + data.sub);
+      set(userRef, {
+        name: data.name,
+        email: data.email,
+        picture: data.picture,
+        time: new Date().toISOString()
+      }).then(() => {
         window.location.href = "home.html";
-      }
-    };
-  </script>
+      }).catch((error) => {
+        console.error("Firebase write error:", error);
+        alert("Failed to sign in. Try again.");
+      });
+    }
+  };
+ </script>
 </body>
 </html>
