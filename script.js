@@ -19,36 +19,35 @@ const database = getDatabase(app);
 
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
 const captureButton = document.getElementById("capture");
-const saveButton = document.getElementById("save");
 const stripButton = document.getElementById("generate-strip");
 const photoStrip = document.getElementById("photo-strip");
 
-const ctx = canvas.getContext("2d");
 let capturedPhotos = [];
 let currentFilter = "none";
 
-// ✅ Webcam Start
+// ✅ Start Webcam
 navigator.mediaDevices.getUserMedia({ video: true })
   .then((stream) => {
     video.srcObject = stream;
   })
-  .catch((error) => {
-    console.error("Error accessing webcam:", error);
+  .catch((err) => {
+    console.error("Webcam error:", err);
   });
 
-// ✅ Filter Apply
-function applyFilter(filterClass) {
+// ✅ Apply Filter
+window.applyFilter = function (filterClass) {
   const dummy = document.createElement("div");
   dummy.className = filterClass;
   document.body.appendChild(dummy);
-
   currentFilter = getComputedStyle(dummy).filter;
   document.body.removeChild(dummy);
   video.style.filter = currentFilter;
-}
+};
 
-// ✅ Capture Photo
+// ✅ Capture Image
 captureButton.addEventListener("click", () => {
   if (capturedPhotos.length >= 4) {
     alert("Maximum 4 photos allowed!");
@@ -68,7 +67,7 @@ captureButton.addEventListener("click", () => {
   photoStrip.appendChild(img);
 });
 
-// ✅ Generate Strip & Upload to Firebase
+// ✅ Generate Photo Strip and Upload
 stripButton.addEventListener("click", () => {
   if (capturedPhotos.length === 0) {
     alert("No photos captured!");
@@ -82,7 +81,7 @@ stripButton.addEventListener("click", () => {
       <title>Photo Strip</title>
       <style>
         body { text-align: center; font-family: Arial; background-color: pink; }
-        canvas { display: block; margin: 20px auto; border: 3px solid black; background: pink; }
+        canvas { display: block; margin: 20px auto; border: 3px solid black; background: white; }
         button { padding: 10px; font-size: 16px; margin: 10px; cursor: pointer; }
       </style>
     </head>
@@ -106,7 +105,8 @@ stripButton.addEventListener("click", () => {
           let yPos = 20;
           const images = ${JSON.stringify(capturedPhotos.map(img => img.src))};
           let loaded = 0;
-          images.forEach((src, i) => {
+
+          images.forEach((src, index) => {
             const img = new Image();
             img.src = src;
             img.onload = () => {
@@ -134,10 +134,12 @@ stripButton.addEventListener("click", () => {
           link.click();
         });
 
-        // ✅ Send to Firebase from Parent
+        // ✅ Upload to Firebase via parent
         setTimeout(() => {
           const base64 = canvas.toDataURL("image/png");
-          window.opener.savePhotoStrip(base64);
+          if (window.opener && window.opener.savePhotoStrip) {
+            window.opener.savePhotoStrip(base64);
+          }
         }, 1500);
       </script>
     </body>
@@ -145,13 +147,13 @@ stripButton.addEventListener("click", () => {
   `);
 });
 
-// ✅ Firebase Upload Function (Accessible from popup)
+// ✅ Upload Function
 window.savePhotoStrip = async function (base64Image) {
   const email = localStorage.getItem("userEmail") || "unknown_user";
   const fileName = `strip_${Date.now()}.png`;
   const path = `photo_strips/${email}/${fileName}`;
-  const imgRef = storageRef(storage, path);
-  await uploadString(imgRef, base64Image, 'data_url');
+  const imageRef = storageRef(storage, path);
+  await uploadString(imageRef, base64Image, 'data_url');
 
   const dbPath = dbRef(database, "payments/" + email.replace('.', '_'));
   const newEntry = push(dbPath);
@@ -163,5 +165,5 @@ window.savePhotoStrip = async function (base64Image) {
     paid: true
   });
 
-  alert("✅ Strip uploaded and linked to user payment!");
+  alert("✅ Photo strip uploaded and saved to Firebase!");
 };
