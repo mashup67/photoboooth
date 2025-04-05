@@ -72,33 +72,36 @@ autoCaptureButton.addEventListener("click", () => {
   countdownOverlay.style.color = "#fff";
   countdownOverlay.style.zIndex = "9999";
   countdownOverlay.id = "countdown";
-
   document.body.appendChild(countdownOverlay);
 
   function showCountdown(i, cb) {
     countdownOverlay.textContent = i;
-    setTimeout(() => {
-      if (i > 1) showCountdown(i - 1, cb);
-      else {
-        countdownOverlay.remove();
+    if (i > 1) {
+      setTimeout(() => showCountdown(i - 1, cb), 1000);
+    } else {
+      setTimeout(() => {
+        countdownOverlay.textContent = "";
         cb();
-      }
-    }, 1000);
+      }, 1000);
+    }
   }
 
-  const interval = setInterval(() => {
+  function captureNext() {
     if (count >= 4) {
-      clearInterval(interval);
+      countdownOverlay.remove();
       return;
     }
 
     showCountdown(3, () => {
       capturePhoto();
       count++;
+      setTimeout(captureNext, 1000); // Wait a bit before next countdown
     });
+  }
 
-  }, 4000); // 3s countdown + 1s buffer
+  captureNext(); // Start the first countdown
 });
+
 
 // ✅ Capture Helper Function
 function capturePhoto() {
