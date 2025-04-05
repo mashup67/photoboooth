@@ -60,8 +60,11 @@ autoCaptureButton.addEventListener("click", () => {
   capturedPhotos = [];
   thumbnailsBox.innerHTML = "";
 
+  const flash = document.getElementById("flash-overlay");
+  const interval = parseInt(document.getElementById("interval").value); // ms
   let count = 0;
 
+  // Create countdown overlay
   const countdownOverlay = document.createElement("div");
   countdownOverlay.style.position = "absolute";
   countdownOverlay.style.top = "50%";
@@ -74,33 +77,42 @@ autoCaptureButton.addEventListener("click", () => {
   countdownOverlay.id = "countdown";
   document.body.appendChild(countdownOverlay);
 
-  function showCountdown(i, cb) {
-    countdownOverlay.textContent = i;
-    if (i > 1) {
-      setTimeout(() => showCountdown(i - 1, cb), 1000);
+  function showCountdown(number, callback) {
+    countdownOverlay.textContent = number;
+    if (number > 1) {
+      setTimeout(() => showCountdown(number - 1, callback), 1000);
     } else {
       setTimeout(() => {
         countdownOverlay.textContent = "";
-        cb();
+        callback();
       }, 1000);
     }
   }
 
-  function captureNext() {
+  function flashScreen() {
+    flash.style.display = "block";
+    setTimeout(() => {
+      flash.style.display = "none";
+    }, 200);
+  }
+
+  function takeNextPhoto() {
     if (count >= 4) {
       countdownOverlay.remove();
       return;
     }
 
     showCountdown(3, () => {
+      flashScreen();
       capturePhoto();
       count++;
-      setTimeout(captureNext, 1000); // Wait a bit before next countdown
+      setTimeout(takeNextPhoto, interval); // wait interval before next photo
     });
   }
 
-  captureNext(); // Start the first countdown
+  takeNextPhoto();
 });
+
 
 
 // ✅ Capture Helper Function
