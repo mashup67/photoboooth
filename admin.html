@@ -3,43 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - Uploaded Strips</title>
-
-  <!-- ✅ Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .entry {
-      background: white;
-      margin: 15px auto;
-      padding: 15px;
-      border-radius: 10px;
-      max-width: 600px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    .entry img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-  </style>
+  <title>Admin Panel | Photobooth</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🛠 Admin Panel: Uploaded Photo Strips</h1>
-  <div id="strip-list"></div>
+
+  <!-- Logout Button -->
+  <button onclick="confirmLogout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
+
+  <h1>📊 Admin Panel: Logged-in Users 📊</h1>
+
+  <!-- User Table -->
+  <table id="users-table" border="1">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Login Time</th>
+      </tr>
+    </thead>
+    <tbody id="user-list">
+      <tr><td colspan="3">Loading users...</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Logout Confirmation Popup -->
+  <div id="logout-popup" class="popup">
+    <div class="popup-content">
+      <p>Are you sure you want to log out?</p>
+      <button onclick="logout()">✅ Yes</button>
+      <button onclick="closePopup()">❌ No</button>
+    </div>
+  </div>
+
+  <!-- Firebase App (non-module / compat version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <script>
-    // ✅ Firebase Config (use your actual details here)
+    // ⛔ Restrict access to admin email
+    const adminEmail = "hasansyedmaaz@gmail.com";
+    const userEmail = localStorage.getItem("userEmail");
+
+    if (!userEmail || userEmail !== adminEmail) {
+      alert("🚫 Access Denied: Only admins can access this page!");
+      window.location.href = "index.html";
+    }
+
+    // ✅ Logout with confirmation
+    function confirmLogout() {
+      document.getElementById("logout-popup").style.display = "block";
+    }
+    function closePopup() {
+      document.getElementById("logout-popup").style.display = "none";
+    }
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
       authDomain: "photobooth-f1b2e.firebaseapp.com",
@@ -47,45 +70,70 @@
       projectId: "photobooth-f1b2e",
       storageBucket: "photobooth-f1b2e.appspot.com",
       messagingSenderId: "14447345131",
-      appId: "1:14447345131:web:d3f3c979979d10cc366dae",
-      measurementId: "G-W7N7W08LWV"
+      appId: "1:14447345131:web:d3f3c979979d10cc366dae"
     };
 
     // ✅ Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const storage = firebase.storage();
+    const db = firebase.database();
 
-    // ✅ Load data from Firebase
-    const listDiv = document.getElementById("strip-list");
-    database.ref("payments").once("value", (snapshot) => {
-      snapshot.forEach((userSnap) => {
-        const userEmailKey = userSnap.key;
-        const userEntries = userSnap.val();
+    // 🔥 Load user data
+    function fetchUsers() {
+      const userList = document.getElementById("user-list");
+      userList.innerHTML = "<tr><td colspan='3'>Fetching users...</td></tr>";
 
-        for (const key in userEntries) {
-          const data = userEntries[key];
-          const email = data.email || "Unknown";
-          const timestamp = data.timestamp || "N/A";
-          const gsUrl = data.imageUrl;
+      db.ref("users").once("value")
+        .then(snapshot => {
+          userList.innerHTML = "";
+          if (snapshot.exists()) {
+            snapshot.forEach(child => {
+              const user = child.val();
+              const row = `<tr>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${new Date(user.time).toLocaleString()}</td>
+              </tr>`;
+              userList.innerHTML += row;
+            });
+          } else {
+            userList.innerHTML = "<tr><td colspan='3'>No users found.</td></tr>";
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          userList.innerHTML = "<tr><td colspan='3'>Error loading users.</td></tr>";
+        });
+    }
 
-          // ✅ Convert gs:// to download URL
-          const path = gsUrl.replace(`gs://${firebaseConfig.storageBucket}/`, "");
-          storage.ref(path).getDownloadURL().then((url) => {
-            const div = document.createElement("div");
-            div.className = "entry";
-            div.innerHTML = `
-              <strong>Email:</strong> ${email}<br>
-              <strong>Timestamp:</strong> ${timestamp}<br>
-              <img src="${url}" alt="Photo Strip">
-            `;
-            listDiv.appendChild(div);
-          }).catch((error) => {
-            console.error("Error loading image:", error);
-          });
-        }
-      });
-    });
+    fetchUsers();
   </script>
+
+  <!-- Custom Styles for Popup -->
+  <style>
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+    .popup-content button {
+      margin: 10px;
+      padding: 10px 20px;
+    }
+    table {
+      margin: 20px auto;
+      width: 90%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+  </style>
 </body>
 </html>
