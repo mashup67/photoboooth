@@ -54,18 +54,15 @@ header {
 }
 
 .camera-box {
-  width: 400px;
-  height: 300px;
+  width: 320px;
+  height: 240px;
   margin: 20px auto;
-  position: relative; /* 👈 THIS WAS MISSING */
+  position: relative;
   border: 10px solid #fff;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   background: #000;
   border-radius: 12px;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #video,
@@ -78,6 +75,11 @@ header {
   top: 0;
   left: 0;
 }
+
+#canvas {
+  display: none; /* Only appears during capture */
+}
+
 
 .controls {
   margin-top: 20px;
