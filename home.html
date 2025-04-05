@@ -1,178 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photobooth Web App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photobooth Web App</title>
 
-    <!-- ✅ Firebase SDKs for app, storage, and realtime database -->
-    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-database-compat.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-database-compat.js"></script>
 
-    <!-- ✅ Your CSS -->
-    <link rel="stylesheet" href="style.css">
-</head> 
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body {
+      background: radial-gradient(circle, #ffd6e8, #fff);
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      margin-top: 60px;
+      flex-wrap: wrap;
+    }
+    #photo-strip-preview {
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .controls {
+      max-width: 300px;
+    }
+    .controls h3 {
+      margin-bottom: 10px;
+    }
+    .controls button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #000;
+      background: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .controls button:hover {
+      background: #ffebf0;
+    }
+    .download-buttons {
+      margin-top: 20px;
+    }
+    .download-buttons button {
+      margin: 5px;
+    }
+  </style>
+</head>
 <body>
 
-    <!-- Logout Button -->
-    <button onclick="confirmLogout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
+  <!-- Logout Button -->
+  <button onclick="confirmLogout()" style="position: absolute; top: 10px; right: 10px;">🚪 Logout</button>
 
-    <!-- Main Heading -->
-    <h1>📸 Photobooth Web App 📸</h1>
+  <!-- Heading -->
+  <h1>📸 Photobooth Web App 📸</h1>
 
-    <!-- Video Feed -->
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-
-    <!-- Control Buttons -->
-    <div class="buttons">
-        <button id="capture" class="round-button">Capture Photo</button>
-        <button id="save" class="round-button">Save Image</button>
-        <button id="generate-strip" class="round-button">Generate Photostrip</button>
-        <button id="ghibli strip-paid" class="round-button" onclick="redirectToPayment()">Ghibli Strip(₹15)</button>
-
+  <!-- Content -->
+  <div class="container">
+    <!-- Strip Preview -->
+    <div id="photo-strip-preview">
+      <div id="photo-strip"></div>
+      <div class="download-buttons">
+        <button onclick="downloadStrip()">⬇️ Download Photo Strip</button>
+        <button onclick="downloadGif()">⬇️ Download GIF</button>
+        <button onclick="resetStrip()">🔁 Take New Photos</button>
+      </div>
     </div>
 
-    <!-- Filter Buttons -->
-    <div class="filters">
-        <button onclick="applyFilter('aesthetic-filter-1')" class="round-button">Filter 1</button>
-        <button onclick="applyFilter('aesthetic-filter-2')" class="round-button">Filter 2</button>
-        <button onclick="applyFilter('aesthetic-filter-3')" class="round-button">Filter 3</button>
-        <button onclick="applyFilter('aesthetic-filter-4')" class="round-button">Filter 4</button>
-        <button onclick="applyFilter('aesthetic-filter-5')" class="round-button">Filter 5</button>
-        <button onclick="applyFilter('aesthetic-filter-6')" class="round-button">Filter 6</button>
-        <button onclick="applyFilter('aesthetic-filter-7')" class="round-button">Filter 7</button>
-        <button onclick="applyFilter('aesthetic-filter-8')" class="round-button">Filter 8</button>
-        <button onclick="applyFilter('aesthetic-filter-9')" class="round-button">Filter 9</button>
+    <!-- Filter/Sticker Controls -->
+    <div class="controls">
+      <h3>🎨 Customize your strip</h3>
+
+      <strong>Frame Colour</strong>
+      <button onclick="setFrameColor('white')">White</button>
+      <button onclick="setFrameColor('black')">Black</button>
+      <button onclick="setFrameColor('pink')">Pink</button>
+      <button onclick="setFrameColor('blue')">Blue</button>
+      <button onclick="setFrameColor('purple')">Purple</button>
+      <button onclick="setFrameColor('green')">Green</button>
+      <button onclick="setFrameColor('yellow')">Yellow</button>
+      <button onclick="setFrameColor('maroon')">Maroon</button>
+      <button onclick="setFrameColor('burgundy')">Burgundy</button>
+
+      <br><br>
+      <strong>Stickers</strong>
+      <button onclick="setSticker('none')">No Stickers</button>
+      <button onclick="setSticker('girlypop')">Girlypop</button>
+      <button onclick="setSticker('cute')">Cute</button>
+      <button onclick="setSticker('mofucand')">Mofucand</button>
+      <button onclick="setSticker('miffy')">Miffy</button>
+      <button onclick="setSticker('nct')">NCT Dream</button>
+
+      <br><br>
+      <button onclick="redirectToPayment()">🌸 Ghibli Strip (₹15)</button>
     </div>
+  </div>
 
-    <!-- Photo Strip Display -->
-    <div id="photo-strip"></div>
+  <!-- Hidden video & canvas -->
+  <video id="video" autoplay style="display:none;"></video>
+  <canvas id="canvas" style="display:none;"></canvas>
 
-    <!-- Logout Confirmation Popup -->
-    <div id="logout-popup" class="popup">
-        <div class="popup-content">
-            <p>Are you sure you want to log out?</p>
-            <button onclick="logout()">✅ Yes</button>
-            <button onclick="closePopup()">❌ No</button>
-        </div>
+  <!-- Logout Popup -->
+  <div id="logout-popup" class="popup">
+    <div class="popup-content">
+      <p>Are you sure you want to log out?</p>
+      <button onclick="logout()">✅ Yes</button>
+      <button onclick="closePopup()">❌ No</button>
     </div>
+  </div>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
-    <script>
-        // ⛔ Block access if not logged in
-        if (localStorage.getItem("loggedIn") !== "true") {
-            window.location.href = "index.html";
-        }
+  <script src="script.js"></script>
 
-        // Optional: Display a welcome message
-        const userName = localStorage.getItem("userName");
-        if (userName) {
-            const h1 = document.querySelector("h1");
-            h1.innerHTML = `📸 Welcome, ${userName}! 📸`;
-        }
+  <script>
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "index.html";
+    }
 
-        // 🚪 Custom Logout Confirmation
-        function confirmLogout() {
-            document.getElementById("logout-popup").style.display = "block";
-        }
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+      document.querySelector("h1").innerText = `📸 Welcome, ${userName}! 📸`;
+    }
 
-        function closePopup() {
-            document.getElementById("logout-popup").style.display = "none";
-        }
+    function confirmLogout() {
+      document.getElementById("logout-popup").style.display = "block";
+    }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = "index.html";
-        }
+    function closePopup() {
+      document.getElementById("logout-popup").style.display = "none";
+    }
 
-        // 🎥 Auto Webcam Permissions Prompt
-        window.onload = function () {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    document.getElementById('video').srcObject = stream;
-                })
-                .catch(error => {
-                    alert("⚠️ Camera access is required for this application.");
-                });
-        };
-    </script>
-    <script>
-  function redirectToPayment() {
-    window.location.href = "payment.html";
-  }
-</script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
 
+    function redirectToPayment() {
+      window.location.href = "payment.html";
+    }
 
+    function downloadStrip() {
+      // Your script.js logic should handle this
+      downloadPhotostrip();
+    }
 
-    <!-- Styles for Logout Popup -->
-    <style>
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            text-align: center;
-        }
-        .popup-content button {
-            margin: 10px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
-<!-- Existing Scripts -->
-<script src="script.js"></script>
+    function downloadGif() {
+      // Your script.js logic should handle this
+      generateGifFromStrip();
+    }
 
-<!-- Firebase Strip Upload & Database Store -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getStorage, ref as storageRef, uploadString } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
-  import { getDatabase, ref as dbRef, set, push } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    function resetStrip() {
+      // Reset UI / strip
+      location.reload();
+    }
+  </script>
 
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_BUCKET.appspot.com",
-    databaseURL: "https://YOUR_BUCKET.firebaseio.com"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const storage = getStorage(app);
-  const database = getDatabase(app);
-
-  // Function to save strip image
-  window.savePhotoStrip = async function (base64Image) {
-    const email = localStorage.getItem("userEmail") || "unknown_user";
-    const fileName = `strip_${Date.now()}.png`;
-
-    const storagePath = `photo_strips/${email}/${fileName}`;
-    const imageRef = storageRef(storage, storagePath);
-    await uploadString(imageRef, base64Image, 'data_url');
-
-    const dbPath = dbRef(database, "payments/" + email.replace('.', '_'));
-    const newEntry = push(dbPath);
-    await set(newEntry, {
-      email,
-      fileName,
-      imageUrl: `gs://${firebaseConfig.storageBucket}/${storagePath}`,
-      timestamp: new Date().toISOString(),
-      paid: true
-    });
-
-    alert("✅ Strip uploaded and linked to user payment!");
-  }
-</script>
-</body>
-</html>
+  <style>
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      text-align: center;
+    }
+    .popup-content button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 
 </body>
 </html>
