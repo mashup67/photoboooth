@@ -23,10 +23,8 @@ function applyFilter(filterClass) {
     const dummyElement = document.createElement("div");
     dummyElement.className = filterClass;
     document.body.appendChild(dummyElement);
-    
     currentFilter = getComputedStyle(dummyElement).filter;
     document.body.removeChild(dummyElement);
-
     video.style.filter = currentFilter;
 }
 
@@ -40,7 +38,7 @@ captureButton.addEventListener("click", () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    ctx.filter = currentFilter;  // ✅ Canvas pe filter apply ho raha hai
+    ctx.filter = currentFilter;
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     let img = new Image();
@@ -51,17 +49,16 @@ captureButton.addEventListener("click", () => {
     photoStrip.appendChild(img);
 });
 
-// ✅ Open New Page for Photo Strip
+// ✅ Generate Strip and Upload to Firebase
 stripButton.addEventListener("click", () => {
     if (capturedPhotos.length === 0) {
         alert("No photos captured!");
         return;
     }
 
-    // ✅ Naya page open karo
     const newWindow = window.open("", "_blank");
+    const images = capturedPhotos.map(img => img.src);
 
-    // ✅ HTML + CSS add karna new page me
     newWindow.document.write(`
         <html>
         <head>
@@ -83,35 +80,49 @@ stripButton.addEventListener("click", () => {
                 <input type="color" id="bgColorPicker" value="#ffffff">
             </label>
             <button id="download">Download Strip</button>
-            <script>
+            <script type="module">
+                import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+                import { getStorage, ref as storageRef, uploadString } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+                import { getDatabase, ref as dbRef, set, push } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+                const firebaseConfig = {
+                    apiKey: "YOUR_API_KEY",
+                    authDomain: "YOUR_AUTH_DOMAIN",
+                    projectId: "YOUR_PROJECT_ID",
+                    storageBucket: "YOUR_BUCKET.appspot.com",
+                    databaseURL: "https://YOUR_BUCKET.firebaseio.com"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const storage = getStorage(app);
+                const database = getDatabase(app);
+
                 const canvas = document.getElementById("stripCanvas");
                 const ctx = canvas.getContext("2d");
                 const imgWidth = 300;
-                const imgHeight = 220;  // ✅ Aspect Ratio maintain kar diya
+                const imgHeight = 220;
                 const spacing = 15;
-                const stripHeight = (${capturedPhotos.length} * (imgHeight + spacing)) + 80;
-                
-                canvas.width = imgWidth + 40; // ✅ Fixed width
-                canvas.height = stripHeight; // ✅ Fixed height
-                
+                const stripHeight = (${images.length} * (imgHeight + spacing)) + 80;
+
+                canvas.width = imgWidth + 40;
+                canvas.height = stripHeight;
+
                 function drawStrip(bgColor = "#ffffff") {
                     ctx.fillStyle = bgColor;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                     let yPos = 20;
-                    const images = ${JSON.stringify(capturedPhotos.map(img => img.src))};
-
                     let loadedCount = 0;
-                    images.forEach((src, index) => {
+                    const imageData = ${JSON.stringify(images)};
+                    
+                    imageData.forEach((src, index) => {
                         const img = new Image();
                         img.src = src;
                         img.onload = () => {
                             ctx.drawImage(img, 20, yPos, imgWidth, imgHeight);
                             yPos += imgHeight + spacing;
                             loadedCount++;
-                            if (loadedCount === images.length) {
-                                drawText();
-                            }
+                            if (loadedCount === imageData.length) drawText();
                         };
                     });
 
@@ -131,10 +142,35 @@ stripButton.addEventListener("click", () => {
                 });
 
                 document.getElementById("download").addEventListener("click", () => {
+                    const dataUrl = canvas.toDataURL("image/png");
+
                     const link = document.createElement("a");
-                    link.href = canvas.toDataURL("image/png");
+                    link.href = dataUrl;
                     link.download = "photo_strip.png";
                     link.click();
+
+                    // ✅ Upload to Firebase
+                    const email = localStorage.getItem("userEmail") || "unknown_user";
+                    const fileName = \`strip_\${Date.now()}.png\`;
+                    const storagePath = \`photo_strips/\${email}/\${fileName}\`;
+                    const imageRef = storageRef(storage, storagePath);
+
+                    uploadString(imageRef, dataUrl, 'data_url')
+                        .then(() => {
+                            const dbPath = dbRef(database, "payments/" + email.replace('.', '_'));
+                            const newEntry = push(dbPath);
+                            return set(newEntry, {
+                                email,
+                                fileName,
+                                imageUrl: \`gs://\${firebaseConfig.storageBucket}/\${storagePath}\`,
+                                timestamp: new Date().toISOString(),
+                                paid: true
+                            });
+                        })
+                        .then(() => {
+                            alert("✅ Strip uploaded & linked with payment!");
+                        })
+                        .catch(console.error);
                 });
             </script>
         </body>
