@@ -25,14 +25,14 @@ const ctx = canvas.getContext("2d");
 let capturedPhotos = [];
 let currentFilter = "none";
 
-// ✅ Start Webcam
+// ✅ Webcam Start
 navigator.mediaDevices.getUserMedia({ video: true })
-  .then((stream) => {
-    video.srcObject = stream;
-  })
-  .catch((err) => {
-    console.error("Webcam error:", err);
-  });
+    .then((stream) => {
+        video.srcObject = stream;
+    })
+    .catch((error) => {
+        console.error("Error accessing webcam:", error);
+    });
 
 // ✅ Apply Filters from Buttons
 document.querySelectorAll(".filter-btn").forEach((btn) => {
