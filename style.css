@@ -56,6 +56,8 @@ header {
 .camera-box {
   width: 400px;
   height: 300px;
+  margin: 20px auto;
+  position: relative; /* 👈 THIS WAS MISSING */
   border: 10px solid #fff;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   background: #000;
@@ -66,7 +68,8 @@ header {
   align-items: center;
 }
 
-#video, #canvas {
+#video,
+#canvas {
   width: 100%;
   height: 100%;
   object-fit: cover;
