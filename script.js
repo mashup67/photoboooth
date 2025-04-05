@@ -17,15 +17,17 @@ const database = firebase.database();
 // ✅ Elements
 const video = document.getElementById("video");
 const captureButton = document.getElementById("captureBtn");
+const autoCaptureButton = document.getElementById("autoCaptureBtn");
 const stripButton = document.getElementById("generateBtn");
 const photoStrip = document.getElementById("photo-strip");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const thumbnailsBox = document.getElementById("thumbnails");
 
 let capturedPhotos = [];
 let currentFilter = "none";
 
-// ✅ Webcam Start
+// ✅ Start Webcam
 navigator.mediaDevices.getUserMedia({ video: true })
   .then((stream) => {
     video.srcObject = stream;
@@ -34,7 +36,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     console.error("Error accessing webcam:", error);
   });
 
-// ✅ Apply Filters from Buttons
+// ✅ Apply Filter Buttons
 document.querySelectorAll(".filter-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     currentFilter = btn.dataset.filter;
@@ -42,50 +44,67 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
   });
 });
 
-// ✅ Capture Photo (Single clean event listener)
+// ✅ Capture Single Photo
 captureButton.addEventListener("click", () => {
   if (capturedPhotos.length >= 4) {
     alert("Max 4 photos allowed!");
     return;
   }
-  const timerCaptureButton = document.getElementById("autoCaptureBtn");
 
-timerCaptureButton.addEventListener("click", () => {
+  capturePhoto();
+});
+
+// ✅ Auto Capture 4 Photos with Countdown
+autoCaptureButton.addEventListener("click", () => {
   if (capturedPhotos.length > 0) {
     if (!confirm("Old photos will be cleared. Continue?")) return;
     capturedPhotos = [];
-    document.getElementById("thumbnails").innerHTML = "";
+    thumbnailsBox.innerHTML = "";
   }
 
   let count = 0;
-  const interval = setInterval(() => {
-    if (count >= 4) {
-      clearInterval(interval);
-      return;
-    }
 
-    // Capture logic (same as manual)
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.filter = currentFilter;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const countdownDiv = document.createElement("div");
+  countdownDiv.style.position = "fixed";
+  countdownDiv.style.top = "50%";
+  countdownDiv.style.left = "50%";
+  countdownDiv.style.transform = "translate(-50%, -50%)";
+  countdownDiv.style.fontSize = "80px";
+  countdownDiv.style.fontWeight = "bold";
+  countdownDiv.style.color = "#ff66b2";
+  countdownDiv.style.zIndex = "9999";
+  document.body.appendChild(countdownDiv);
 
-    const dataUrl = canvas.toDataURL("image/png");
+  function startCountdownAndCapture() {
+    let timer = 3;
+    countdownDiv.textContent = timer;
 
-    const thumb = new Image();
-    thumb.src = dataUrl;
-    document.getElementById("thumbnails").appendChild(thumb);
+    const countdownInterval = setInterval(() => {
+      timer--;
+      if (timer > 0) {
+        countdownDiv.textContent = timer;
+      } else {
+        clearInterval(countdownInterval);
+        countdownDiv.textContent = "📸";
+        setTimeout(() => {
+          capturePhoto();
+          countdownDiv.textContent = "";
+          count++;
+          if (count < 4) {
+            startCountdownAndCapture();
+          } else {
+            document.body.removeChild(countdownDiv);
+          }
+        }, 500);
+      }
+    }, 1000);
+  }
 
-    const img = new Image();
-    img.src = dataUrl;
-    capturedPhotos.push(img);
-
-    count++;
-  }, 3000); // 3 sec gap
+  startCountdownAndCapture();
 });
 
-
-
+// ✅ Capture Logic Function
+function capturePhoto() {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   ctx.filter = currentFilter;
@@ -93,16 +112,28 @@ timerCaptureButton.addEventListener("click", () => {
 
   const dataUrl = canvas.toDataURL("image/png");
 
-  // Thumbnail create
-  const thumb = new Image();
-  thumb.src = dataUrl;
-  document.getElementById("thumbnails").appendChild(thumb);
+  // Thumbnail
+  const thumbWrapper = document.createElement("div");
+  thumbWrapper.classList.add("thumbnail-wrapper");
 
-  // Store for strip generation
+  const thumbImg = new Image();
+  thumbImg.src = dataUrl;
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "✖";
+  deleteBtn.onclick = () => {
+    thumbnailsBox.removeChild(thumbWrapper);
+    capturedPhotos = capturedPhotos.filter(p => p.src !== dataUrl);
+  };
+
+  thumbWrapper.appendChild(thumbImg);
+  thumbWrapper.appendChild(deleteBtn);
+  thumbnailsBox.appendChild(thumbWrapper);
+
   const img = new Image();
   img.src = dataUrl;
   capturedPhotos.push(img);
-});
+}
 
 // ✅ Generate Photo Strip in New Window
 stripButton.addEventListener("click", () => {
@@ -112,7 +143,6 @@ stripButton.addEventListener("click", () => {
   }
 
   const newWindow = window.open("", "_blank");
-
   const imgData = capturedPhotos.map((img) => img.src);
 
   newWindow.document.write(`
@@ -131,7 +161,7 @@ stripButton.addEventListener("click", () => {
         canvas.width = imgWidth + 40;
         canvas.height = (images.length * (imgHeight + spacing)) + 80;
 
-        function drawStrip(stickerImg = null) {
+        function drawStrip() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.fillStyle = "#fff";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -144,9 +174,6 @@ stripButton.addEventListener("click", () => {
             img.src = src;
             img.onload = () => {
               ctx.drawImage(img, 20, y, imgWidth, imgHeight);
-              if (stickerImg) {
-                ctx.drawImage(stickerImg, 20 + imgWidth - 70, y + imgHeight - 70, 60, 60);
-              }
               y += imgHeight + spacing;
               loaded++;
               if (loaded === images.length) {
@@ -169,16 +196,18 @@ stripButton.addEventListener("click", () => {
           }
         }, 1000);
 
-        // Download button
+        // Download Button
         const downloadBtn = document.createElement("button");
         downloadBtn.innerText = "⬇️ Download Photo Strip";
+        downloadBtn.style.padding = "10px 20px";
+        downloadBtn.style.marginTop = "20px";
+        downloadBtn.style.fontSize = "16px";
         downloadBtn.onclick = () => {
           const link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
           link.download = "photo_strip.png";
           link.click();
         };
-
         document.body.appendChild(downloadBtn);
       <\/script>
     </body>
