@@ -16,34 +16,34 @@
     <button id="logoutBtn">📕 Logout</button>
   </header>
 
-  <main class="main-container">
-    <section class="camera-section">
-      <div class="camera-box">
-        <video id="video" autoplay playsinline></video>
-      </div>
+ <section class="camera-section">
+  <div class="camera-box">
+    <video id="video" autoplay playsinline></video>
+    <!-- ✅ Hidden canvas for photo capture -->
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+  </div>
 
-      <div class="controls">
-        <button id="captureBtn">📸 Take Photo</button>
-        <button id="generateBtn">🖼️ Generate Photo Strip</button
-        <button id="retake">🔁 Take New Photos</button>
-        <button id="ghibliUploadBtn">✨ Ghibli Strip (₹15)</button>
-      </div>
+  <div class="controls">
+    <button id="captureBtn">📸 Take Photo</button>
+    <button id="generateBtn">🖼️ Generate Photo Strip</button>
+    <button id="retake">🔁 Take New Photos</button>
+    <button id="ghibliUploadBtn">✨ Ghibli Strip (₹15)</button>
+  </div>
 
-      <div class="filter-container">
-        <h3>🌈 Filters</h3>
-        <div class="filter-options">
-          <button class="filter-btn" data-filter="none">No Filter</button>
-          <button class="filter-btn" data-filter="grayscale(100%)">Grayscale</button>
-          <button class="filter-btn" data-filter="sepia(100%)">Sepia</button>
-          <button class="filter-btn" data-filter="invert(1)">Invert</button>
-          <button class="filter-btn" data-filter="contrast(150%)">Contrast+</button>
-          <button class="filter-btn" data-filter="brightness(130%)">Bright</button>
-          <button class="filter-btn" data-filter="blur(2px)">Blur</button>
-          <button class="filter-btn" data-filter="hue-rotate(90deg)">Hue</button>
-        </div>
-      </div>
-    </section>
-  </main>
+  <div class="filter-container">
+    <h3>🌈 Filters</h3>
+    <div class="filter-options">
+      <button class="filter-btn" data-filter="none">No Filter</button>
+      <button class="filter-btn" data-filter="grayscale(100%)">Grayscale</button>
+      <button class="filter-btn" data-filter="sepia(100%)">Sepia</button>
+      <button class="filter-btn" data-filter="invert(1)">Invert</button>
+      <button class="filter-btn" data-filter="contrast(150%)">Contrast+</button>
+      <button class="filter-btn" data-filter="brightness(130%)">Bright</button>
+      <button class="filter-btn" data-filter="blur(2px)">Blur</button>
+      <button class="filter-btn" data-filter="hue-rotate(90deg)">Hue</button>
+    </div>
+  </div>
+</section>
 
   <section id="photo-strip"></section>
 
