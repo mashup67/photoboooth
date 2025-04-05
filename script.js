@@ -17,26 +17,9 @@ const database = firebase.database();
 // ✅ Elements
 const video = document.getElementById("video");
 const captureButton = document.getElementById("captureBtn");
-// Assuming canvas contains captured image
-document.getElementById("captureBtn").addEventListener("click", () => {
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-  const video = document.getElementById("video");
-
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.filter = video.style.filter || "none";
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  // Thumbnail create karo
-  const img = document.createElement("img");
-  img.src = canvas.toDataURL("image/png");
-  document.getElementById("thumbnails").appendChild(img);
-});
-
 const stripButton = document.getElementById("generateBtn");
 const photoStrip = document.getElementById("photo-strip");
-const canvas = document.createElement("canvas");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let capturedPhotos = [];
@@ -44,12 +27,12 @@ let currentFilter = "none";
 
 // ✅ Webcam Start
 navigator.mediaDevices.getUserMedia({ video: true })
-    .then((stream) => {
-        video.srcObject = stream;
-    })
-    .catch((error) => {
-        console.error("Error accessing webcam:", error);
-    });
+  .then((stream) => {
+    video.srcObject = stream;
+  })
+  .catch((error) => {
+    console.error("Error accessing webcam:", error);
+  });
 
 // ✅ Apply Filters from Buttons
 document.querySelectorAll(".filter-btn").forEach((btn) => {
@@ -59,7 +42,7 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
   });
 });
 
-// ✅ Capture Photo
+// ✅ Capture Photo (Single clean event listener)
 captureButton.addEventListener("click", () => {
   if (capturedPhotos.length >= 4) {
     alert("Max 4 photos allowed!");
@@ -71,10 +54,17 @@ captureButton.addEventListener("click", () => {
   ctx.filter = currentFilter;
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+  const dataUrl = canvas.toDataURL("image/png");
+
+  // Thumbnail create
+  const thumb = new Image();
+  thumb.src = dataUrl;
+  document.getElementById("thumbnails").appendChild(thumb);
+
+  // Store for strip generation
   const img = new Image();
-  img.src = canvas.toDataURL("image/png");
+  img.src = dataUrl;
   capturedPhotos.push(img);
-  photoStrip.appendChild(img);
 });
 
 // ✅ Generate Photo Strip in New Window
@@ -142,7 +132,7 @@ stripButton.addEventListener("click", () => {
           }
         }, 1000);
 
-        // Download buttons
+        // Download button
         const downloadBtn = document.createElement("button");
         downloadBtn.innerText = "⬇️ Download Photo Strip";
         downloadBtn.onclick = () => {
