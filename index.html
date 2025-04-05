@@ -73,57 +73,65 @@
       music.play();
       document.getElementById("play-music").style.display = "none";
     });
-
-    // Redirect if already logged in
-    if (localStorage.getItem("loggedIn") === "true") {
-      window.location.href = "home.html";
-    }
   </script>
 
   <!-- JWT Decode -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+  <!-- Firebase (Modular) Setup -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
-    authDomain: "photobooth-f1b2e.firebaseapp.com",
-    projectId: "photobooth-f1b2e",
-    storageBucket: "photobooth-f1b2e.appspot.com",
-    messagingSenderId: "14447345131",
-    appId: "1:14447345131:web:d3f3c979979d10cc366dae",
-    measurementId: "G-W7N7W08LWV",
-    databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiwICR8vJ-XvryAqc2os-q7teaEn0n1SY",
+      authDomain: "photobooth-f1b2e.firebaseapp.com",
+      projectId: "photobooth-f1b2e",
+      storageBucket: "photobooth-f1b2e.appspot.com",
+      messagingSenderId: "14447345131",
+      appId: "1:14447345131:web:d3f3c979979d10cc366dae",
+      measurementId: "G-W7N7W08LWV",
+      databaseURL: "https://photobooth-f1b2e-default-rtdb.firebaseio.com"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  // Expose this globally
-  window.handleCredentialResponse = function (response) {
-    const data = jwt_decode(response.credential);
-    console.log("Google data:", data);
+    // Expose Firebase functions to global scope
+    window.firebaseDB = db;
+    window.firebaseRef = ref;
+    window.firebaseSet = set;
+  </script>
 
-    if (data) {
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("userEmail", data.email);
+  <!-- Global Script to Handle Sign-In -->
+  <script>
+    async function handleCredentialResponse(response) {
+      const data = jwt_decode(response.credential);
+      console.log("Google Data:", data);
 
-      const userRef = ref(db, 'users/' + data.sub);
-      set(userRef, {
-        name: data.name,
-        email: data.email,
-        picture: data.picture,
-        time: new Date().toISOString()
-      }).then(() => {
-        window.location.href = "home.html";
-      }).catch((error) => {
-        console.error("Firebase write error:", error);
-        alert("Failed to sign in. Try again.");
-      });
+      if (data) {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userEmail", data.email);
+
+        const userRef = firebaseRef(firebaseDB, 'users/' + data.sub);
+        firebaseSet(userRef, {
+          name: data.name,
+          email: data.email,
+          picture: data.picture,
+          time: new Date().toISOString()
+        }).then(() => {
+          window.location.href = "home.html";
+        }).catch((err) => {
+          console.error("Firebase write failed:", err);
+          alert("Sign-in failed. Please try again.");
+        });
+      }
     }
-  };
- </script>
+
+    // Auto Redirect if already signed in
+    if (localStorage.getItem("loggedIn") === "true") {
+      window.location.href = "home.html";
+    }
+  </script>
 </body>
 </html>
