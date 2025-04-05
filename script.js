@@ -17,6 +17,23 @@ const database = firebase.database();
 // ✅ Elements
 const video = document.getElementById("video");
 const captureButton = document.getElementById("captureBtn");
+// Assuming canvas contains captured image
+document.getElementById("captureBtn").addEventListener("click", () => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  const video = document.getElementById("video");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.filter = video.style.filter || "none";
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Thumbnail create karo
+  const img = document.createElement("img");
+  img.src = canvas.toDataURL("image/png");
+  document.getElementById("thumbnails").appendChild(img);
+});
+
 const stripButton = document.getElementById("generateBtn");
 const photoStrip = document.getElementById("photo-strip");
 const canvas = document.createElement("canvas");
