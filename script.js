@@ -25,12 +25,16 @@ const photoStrip = document.getElementById("photo-strip");
 let capturedPhotos = [];
 let currentFilter = "none";
 
-// ✅ Webcam
+// ✅ Start Webcam
 navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => { video.srcObject = stream; })
-  .catch(err => { console.error("Webcam error:", err); });
+  .then((stream) => {
+    video.srcObject = stream;
+  })
+  .catch((err) => {
+    console.error("Webcam error:", err);
+  });
 
-// ✅ Filter
+// ✅ Apply Filter Function
 window.applyFilter = function (filterClass) {
   const dummy = document.createElement("div");
   dummy.className = filterClass;
@@ -40,31 +44,31 @@ window.applyFilter = function (filterClass) {
   video.style.filter = currentFilter;
 };
 
-// ✅ Capture
+// ✅ Capture Image
 captureButton.addEventListener("click", () => {
   if (capturedPhotos.length >= 4) {
     alert("Max 4 photos allowed!");
     return;
   }
-
+  
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   ctx.filter = currentFilter;
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+  
   const img = new Image();
   img.src = canvas.toDataURL("image/png");
   capturedPhotos.push(img);
   photoStrip.appendChild(img);
 });
 
-// ✅ Generate Strip
+// ✅ Generate Photo Strip and Open in New Window
 stripButton.addEventListener("click", () => {
   if (capturedPhotos.length === 0) {
     alert("No photos captured!");
     return;
   }
-
+  
   const newWindow = window.open("", "_blank");
   newWindow.document.write(`
     <html>
@@ -72,8 +76,8 @@ stripButton.addEventListener("click", () => {
       <title>Photo Strip</title>
       <style>
         body { text-align: center; background: pink; font-family: Arial; }
-        canvas { margin: auto; border: 3px solid black; display: block; }
-        button { margin: 10px; padding: 10px; }
+        canvas { margin: 20px auto; border: 3px solid black; background: white; display: block; }
+        button { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
       </style>
     </head>
     <body>
@@ -89,7 +93,7 @@ stripButton.addEventListener("click", () => {
         const images = ${JSON.stringify(capturedPhotos.map(img => img.src))};
         canvas.width = imgWidth + 40;
         canvas.height = (images.length * (imgHeight + spacing)) + 80;
-
+        
         function drawStrip() {
           ctx.fillStyle = "#fff";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -105,7 +109,6 @@ stripButton.addEventListener("click", () => {
               if (loaded === images.length) drawText();
             };
           });
-
           function drawText() {
             ctx.fillStyle = "black";
             ctx.font = "18px Arial";
@@ -113,17 +116,16 @@ stripButton.addEventListener("click", () => {
             ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 30);
           }
         }
-
         drawStrip();
-
+        
         document.getElementById("download").addEventListener("click", () => {
           const link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
           link.download = "photo_strip.png";
           link.click();
         });
-
-        // ✅ Upload to Firebase
+        
+        // ✅ After drawing, auto-upload the strip to Firebase via the parent window
         setTimeout(() => {
           const base64 = canvas.toDataURL("image/png");
           if (window.opener && window.opener.savePhotoStrip) {
@@ -136,7 +138,7 @@ stripButton.addEventListener("click", () => {
   `);
 });
 
-// ✅ Upload Function (runs in parent)
+// ✅ Upload Function: Saves the photo strip to Firebase Storage and logs it in Firebase Database
 window.savePhotoStrip = async function (base64Image) {
   const email = localStorage.getItem("userEmail") || "unknown_user";
   const fileName = `strip_${Date.now()}.png`;
@@ -144,16 +146,16 @@ window.savePhotoStrip = async function (base64Image) {
   const ref = storage.ref(path);
 
   await ref.putString(base64Image, 'data_url');
-
+  
   const imageUrl = await ref.getDownloadURL();
   const entryRef = database.ref("payments/" + email.replace('.', '_')).push();
   await entryRef.set({
-    email,
-    fileName,
-    imageUrl,
+    email: email,
+    fileName: fileName,
+    imageUrl: imageUrl,
     timestamp: new Date().toISOString(),
     paid: true
   });
 
-  alert("✅ Strip uploaded & linked with user!");
+  alert("✅ Strip uploaded & linked with user payment!");
 };
