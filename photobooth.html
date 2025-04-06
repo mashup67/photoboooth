@@ -103,6 +103,7 @@
 
     drawStrip();
 
+    // ✅ Frame color change
     document.querySelectorAll(".color-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         selectedColor = btn.dataset.color;
@@ -110,31 +111,37 @@
       });
     });
 
+    // ✅ Download and Upload to Google Drive
     downloadBtn.addEventListener("click", () => {
       const base64 = canvas.toDataURL("image/png");
-      const fileName = "photo_strip_" + Date.now() + ".png";
 
-      // ✅ Download locally
+      // First download locally
       const link = document.createElement("a");
       link.href = base64;
-      link.download = fileName;
+      link.download = "photo_strip.png";
       link.click();
 
-      // ✅ Upload to Google Drive via Apps Script
-      fetch("https://script.google.com/macros/s/AKfycbyem9qvsMgil0Vg8t8U95CqskndADcqpNDViRbKpkud2Wdx7ArYj5dWoogvGFSAXeOLqA/exec", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          fileName: fileName,
-          image: base64
-        })
-      }).then(res => {
-        console.log("✅ Uploaded to Google Drive");
-      }).catch(err => {
-        console.error("❌ Upload failed:", err);
-      });
+      // Then upload to Google Drive via Apps Script
+      fetch(base64)
+        .then(res => res.blob())
+        .then(blob => {
+          const formData = new FormData();
+          formData.append("image", blob, "photo_strip.png");
+
+          fetch("https://script.google.com/macros/s/AKfycbxw4_YQTu3CUlqiXBIUyISl2sepe7HyCiTSRrm1Zm4R3wJN_cvwRxNjrrMI3oaacIRyig/exec", {
+            method: "POST",
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            console.log("✅ Uploaded to Google Drive:", data);
+            alert("Photo Strip Uploaded to Drive!");
+          })
+          .catch(err => {
+            console.error("❌ Upload failed:", err);
+            alert("Upload failed!");
+          });
+        });
     });
   </script>
 </body>
