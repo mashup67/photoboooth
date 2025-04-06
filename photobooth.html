@@ -120,32 +120,38 @@
       link.click();
 
       // Convert base64 to Blob and upload
-      fetch(base64)
-        .then(res => res.blob())
-        .then(blob => {
-          fetch("https://script.google.com/macros/library/d/1S3ziOuBRXfJsAU9vRJkJj2xFZDGGHlXzuxmzCuY4eHDow9-lrXlknm6p/3", {
-            method: "POST",
-            body: blob,
-            headers: {
-              "Content-Type": "image/png"
-            }
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              console.log("✅ Uploaded to Google Drive:", data.url);
-              alert("🎉 Photo Strip Uploaded to Drive!\n📁 File URL:\n" + data.url);
-            } else {
-              console.error("❌ Upload failed:", data.error);
-              alert("❌ Upload failed: " + data.error);
-            }
-          })
-          .catch(err => {
-            console.error("❌ Network error:", err);
-            alert("❌ Upload failed! (Network Error)");
-          });
-        });
-    });
-  </script>
+      downloadBtn.addEventListener("click", () => {
+  const base64 = canvas.toDataURL("image/png");
+
+  // Download locally
+  const link = document.createElement("a");
+  link.href = base64;
+  link.download = "photo_strip.png";
+  link.click();
+
+  // Upload to Google Apps Script backend
+  fetch("https://script.google.com/macros/s/AKfycbxw4_YQTu3CUlqiXBIUyISl2sepe7HyCiTSRrm1Zm4R3wJN_cvwRxNjrrMI3oaacIRyig/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ image: base64 })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      console.log("✅ Uploaded to Google Drive:", data.url);
+      alert("Photo Strip Uploaded to Drive!");
+    } else {
+      console.error("❌ Upload error:", data.error);
+      alert("Upload failed!");
+    }
+  })
+  .catch(err => {
+    console.error("❌ Network error:", err);
+    alert("Upload failed!");
+  });
+});
+</script>
 </body>
 </html>
