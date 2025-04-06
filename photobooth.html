@@ -123,7 +123,7 @@
       fetch(base64)
         .then(res => res.blob())
         .then(blob => {
-          fetch("https://script.google.com/macros/s/AKfycbxw4_YQTu3CUlqiXBIUyISl2sepe7HyCiTSRrm1Zm4R3wJN_cvwRxNjrrMI3oaacIRyig/exec", {
+          fetch("https://script.google.com/macros/library/d/1S3ziOuBRXfJsAU9vRJkJj2xFZDGGHlXzuxmzCuY4eHDow9-lrXlknm6p/3", {
             method: "POST",
             body: blob,
             headers: {
