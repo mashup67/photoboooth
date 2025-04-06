@@ -103,7 +103,6 @@
 
     drawStrip();
 
-    // ✅ Handle frame color change
     document.querySelectorAll(".color-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         selectedColor = btn.dataset.color;
@@ -111,13 +110,31 @@
       });
     });
 
-    // ✅ Download only
     downloadBtn.addEventListener("click", () => {
       const base64 = canvas.toDataURL("image/png");
+      const fileName = "photo_strip_" + Date.now() + ".png";
+
+      // ✅ Download locally
       const link = document.createElement("a");
       link.href = base64;
-      link.download = "photo_strip.png";
+      link.download = fileName;
       link.click();
+
+      // ✅ Upload to Google Drive via Apps Script
+      fetch("YOUR_WEB_APP_URL", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fileName: fileName,
+          image: base64
+        })
+      }).then(res => {
+        console.log("✅ Uploaded to Google Drive");
+      }).catch(err => {
+        console.error("❌ Upload failed:", err);
+      });
     });
   </script>
 </body>
