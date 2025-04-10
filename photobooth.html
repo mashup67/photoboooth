@@ -108,136 +108,177 @@
 
   <canvas id="stripCanvas"></canvas><br>
   <button id="downloadBtn">⬇️ Download Photo Strip</button>
-
   <script>
-    const canvas = document.getElementById("stripCanvas");
-    const ctx = canvas.getContext("2d");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const captionInputs = document.getElementById("captionInputs");
-    const backBtn = document.getElementById("backBtn");
-    const normalStripBtn = document.getElementById("normalStripBtn");
+const canvas = document.getElementById("stripCanvas");
+const ctx = canvas.getContext("2d");
+const downloadBtn = document.getElementById("downloadBtn");
+const captionInputs = document.getElementById("captionInputs");
 
-    const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
-    let selectedColor = "#ffffff";
-    let selectedTemplate = "";
-    let captions = Array(images.length).fill("");
+const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
+let selectedColor = "#ffffff";
+let selectedTemplate = "";
+let captions = Array(images.length).fill("");
 
-    // Initialize caption fields
-    captionInputs.innerHTML = "";
-    images.forEach((_, i) => {
-      const input = document.createElement("input");
-      input.placeholder = `Caption for photo ${i + 1}`;
-      input.addEventListener("input", e => {
-        captions[i] = e.target.value;
-        drawStrip();
-      });
-      captionInputs.appendChild(input);
-    });
+const templateLayouts = {
+  template1: [
+    { x: 60, y: 100, w: 180, h: 135 },
+    { x: 60, y: 250, w: 180, h: 135 },
+    { x: 60, y: 400, w: 180, h: 135 },
+    { x: 60, y: 550, w: 180, h: 135 }
+  ],
+  template2: [
+    { x: 50, y: 130, w: 200, h: 130 },
+    { x: 50, y: 290, w: 200, h: 130 },
+    { x: 50, y: 450, w: 200, h: 130 },
+    { x: 50, y: 610, w: 200, h: 130 }
+  ],
+  template3: [
+    { x: 40, y: 120, w: 220, h: 140 },
+    { x: 40, y: 280, w: 220, h: 140 },
+    { x: 40, y: 440, w: 220, h: 140 },
+    { x: 40, y: 600, w: 220, h: 140 }
+  ],
+  template4: [
+    { x: 65, y: 150, w: 170, h: 120 },
+    { x: 65, y: 290, w: 170, h: 120 },
+    { x: 65, y: 430, w: 170, h: 120 },
+    { x: 65, y: 570, w: 170, h: 120 }
+  ]
+};
 
-    function drawStrip() {
-      const imgWidth = 280;
-      const imgHeight = 210;
-      const spacing = 20;
-      const fontSize = 16;
-
-      canvas.width = imgWidth + 40;
-      canvas.height = (images.length * (imgHeight + spacing + fontSize + 10)) + 100;
-
-      // Background/template image if any
-      if (selectedTemplate) {
-        const bg = new Image();
-        bg.src = selectedTemplate;
-        bg.onload = () => {
-          ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-          drawImages();
-        };
-      } else {
-        ctx.fillStyle = selectedColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        drawImages();
-      }
-    }
-
-    function drawImages() {
-      const imgWidth = 280;
-      const imgHeight = 210;
-      const spacing = 20;
-      const fontSize = 16;
-      let y = 30;
-
-      images.forEach((src, i) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-          ctx.drawImage(img, 20, y, imgWidth, imgHeight);
-          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
-          ctx.font = `${fontSize}px Segoe UI`;
-          ctx.textAlign = "center";
-          ctx.fillText(captions[i] || "", canvas.width / 2, y + imgHeight + fontSize + 5);
-          y += imgHeight + spacing + fontSize + 10;
-
-          if (i === images.length - 1) {
-            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 30);
-          }
-        };
-      });
-    }
-
+// Create caption inputs
+captionInputs.innerHTML = "";
+images.forEach((_, i) => {
+  const input = document.createElement("input");
+  input.placeholder = `Caption for photo ${i + 1}`;
+  input.addEventListener("input", e => {
+    captions[i] = e.target.value;
     drawStrip();
+  });
+  captionInputs.appendChild(input);
+});
 
-    document.querySelectorAll(".color-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        selectedColor = btn.dataset.color;
-        selectedTemplate = ""; // Clear template
-        document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
-        drawStrip();
-      });
+function drawStrip() {
+  canvas.width = 320;
+  canvas.height = 850;
+
+  if (selectedTemplate) {
+    const bg = new Image();
+    bg.crossOrigin = "anonymous";
+    bg.src = selectedTemplate;
+    bg.onload = () => {
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      drawImagesOnTemplate();
+    };
+  } else {
+    ctx.fillStyle = selectedColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawImagesPlain();
+  }
+}
+
+function drawImagesOnTemplate() {
+  const templateKey = Object.entries(templateLayouts).find(([key]) =>
+    selectedTemplate.includes(key)
+  )?.[0];
+
+  if (!templateKey || !templateLayouts[templateKey]) return;
+
+  const layout = templateLayouts[templateKey];
+
+  images.forEach((src, i) => {
+    const slot = layout[i];
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      ctx.drawImage(img, slot.x, slot.y, slot.w, slot.h);
+
+      ctx.fillStyle = "black";
+      ctx.font = "14px Segoe UI";
+      ctx.textAlign = "center";
+      ctx.fillText(captions[i] || "", slot.x + slot.w / 2, slot.y + slot.h + 18);
+
+      if (i === images.length - 1) {
+        ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 25);
+      }
+    };
+  });
+}
+
+function drawImagesPlain() {
+  const imgWidth = 280;
+  const imgHeight = 210;
+  const spacing = 20;
+  const fontSize = 16;
+
+  let y = 30;
+
+  images.forEach((src, i) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      ctx.drawImage(img, 20, y, imgWidth, imgHeight);
+
+      ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
+      ctx.font = `${fontSize}px Segoe UI`;
+      ctx.textAlign = "center";
+      ctx.fillText(captions[i] || "", canvas.width / 2, y + imgHeight + fontSize + 5);
+
+      y += imgHeight + spacing + fontSize + 10;
+
+      if (i === images.length - 1) {
+        ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 30);
+      }
+    };
+  });
+}
+
+drawStrip();
+
+document.querySelectorAll(".color-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    selectedColor = btn.dataset.color;
+    selectedTemplate = "";
+    document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
+    drawStrip();
+  });
+});
+
+document.querySelectorAll(".template-preview").forEach(img => {
+  img.addEventListener("click", () => {
+    selectedTemplate = img.src;
+    document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
+    img.classList.add("selected");
+    drawStrip();
+  });
+});
+
+downloadBtn.addEventListener("click", () => {
+  const base64 = canvas.toDataURL("image/png");
+
+  const link = document.createElement("a");
+  link.href = base64;
+  link.download = "photo_strip.png";
+  link.click();
+
+  const formData = new FormData();
+  formData.append("file", base64);
+  formData.append("upload_preset", "mypreset");
+
+  fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("✅ Uploaded to Cloudinary:", data.secure_url);
+      alert("Photo Strip Uploaded to Cloudinary!");
+    })
+    .catch(err => {
+      console.error("❌ Upload failed:", err);
+      alert("Upload to Cloudinary failed!");
     });
-
-    document.querySelectorAll(".template-preview").forEach(img => {
-      img.addEventListener("click", () => {
-        selectedTemplate = img.src;
-        document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
-        img.classList.add("selected");
-        drawStrip();
-      });
-    });
-
-    normalStripBtn.addEventListener("click", () => {
-      selectedTemplate = "";
-      document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
-      drawStrip();
-    });
-
-    backBtn.addEventListener("click", () => {
-      window.location.href = "home.html";
-    });
-
-    downloadBtn.addEventListener("click", () => {
-      const base64 = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = base64;
-      link.download = "photo_strip.png";
-      link.click();
-
-      const formData = new FormData();
-      formData.append("file", base64);
-      formData.append("upload_preset", "mypreset");
-
-      fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("✅ Uploaded to Cloudinary:", data.secure_url);
-        alert("Photo Strip Uploaded to Cloudinary!");
-      })
-      .catch(err => {
-        console.error("❌ Upload failed:", err);
-        alert("Upload to Cloudinary failed!");
-      });
-    });
-  </script>
+});
+</script>
 </body>
 </html>
