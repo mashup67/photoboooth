@@ -16,22 +16,49 @@
       border-radius: 10px;
       background-color: white;
     }
-    .color-buttons {
+    .color-buttons, .template-row {
       margin: 20px auto;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 12px;
     }
+    .color-btn, .template-preview {
+      cursor: pointer;
+    }
     .color-btn {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       border: 3px solid #fff;
-      cursor: pointer;
       box-shadow: 0 0 5px rgba(0,0,0,0.3);
     }
-    #downloadBtn {
+    .template-preview {
+      width: 90px;
+      height: 160px;
+      border: 2px solid transparent;
+      object-fit: cover;
+      border-radius: 6px;
+      transition: transform 0.2s ease;
+    }
+    .template-preview.selected {
+      border-color: deeppink;
+      transform: scale(1.05);
+    }
+    .caption-inputs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 20px 0;
+    }
+    .caption-inputs input {
+      width: 240px;
+      padding: 6px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    #downloadBtn, #normalStripBtn, #backBtn {
       margin-top: 20px;
       padding: 12px 24px;
       font-size: 16px;
@@ -41,13 +68,24 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    #downloadBtn:hover {
+    #downloadBtn:hover, #normalStripBtn:hover, #backBtn:hover {
       background-color: deeppink;
+    }
+    .top-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
 <body>
   <h2>Customize Your Photo Strip</h2>
+
+  <div class="top-buttons">
+    <button id="backBtn">⬅️ Back to Edit</button>
+    <button id="normalStripBtn">🎨 Use Normal Strip</button>
+  </div>
 
   <div class="color-buttons">
     <div class="color-btn" style="background: white;" data-color="#ffffff"></div>
@@ -58,86 +96,148 @@
     <div class="color-btn" style="background: black;" data-color="#000000"></div>
   </div>
 
-  <canvas id="stripCanvas"></canvas>
-  <br/>
+  <h3>Select a Template</h3>
+  <div class="template-row">
+    <img src="Grey Minimalist Aesthetic Photo Collage Instagram Story.png" class="template-preview" data-template="template1">
+    <img src="Vintage Happy Birthday Greetings Instagram Story.png" class="template-preview" data-template="template2">
+    <img src="Grey Scrapbook Photo Collage Friends Instagram Story.png" class="template-preview" data-template="template3">
+    <img src="Pink and Red Creative Playful Illustration Collage Couple Valentines Day Photo Strips.png" class="template-preview" data-template="template4">
+  </div>
+
+  <div class="caption-inputs" id="captionInputs"></div>
+
+  <canvas id="stripCanvas"></canvas><br>
   <button id="downloadBtn">⬇️ Download Photo Strip</button>
 
   <script>
-  const canvas = document.getElementById("stripCanvas");
-  const ctx = canvas.getContext("2d");
-  const downloadBtn = document.getElementById("downloadBtn");
+    const canvas = document.getElementById("stripCanvas");
+    const ctx = canvas.getContext("2d");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const captionInputs = document.getElementById("captionInputs");
+    const backBtn = document.getElementById("backBtn");
+    const normalStripBtn = document.getElementById("normalStripBtn");
 
-  const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
-  let selectedColor = "#ffffff";
+    const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
+    let selectedColor = "#ffffff";
+    let selectedTemplate = "";
+    let captions = Array(images.length).fill("");
 
-  function drawStrip() {
-    const imgWidth = 300;
-    const imgHeight = 220;
-    const spacing = 15;
-
-    canvas.width = imgWidth + 40;
-    canvas.height = (images.length * (imgHeight + spacing)) + 80;
-
-    ctx.fillStyle = selectedColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    let y = 20;
-    let loaded = 0;
-
-    images.forEach((src, i) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        ctx.drawImage(img, 20, y, imgWidth, imgHeight);
-        y += imgHeight + spacing;
-        loaded++;
-        if (loaded === images.length) {
-          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
-          ctx.font = "18px Arial";
-          ctx.textAlign = "center";
-          ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 30);
-        }
-      };
+    // Initialize caption fields
+    captionInputs.innerHTML = "";
+    images.forEach((_, i) => {
+      const input = document.createElement("input");
+      input.placeholder = `Caption for photo ${i + 1}`;
+      input.addEventListener("input", e => {
+        captions[i] = e.target.value;
+        drawStrip();
+      });
+      captionInputs.appendChild(input);
     });
-  }
 
-  drawStrip();
+    function drawStrip() {
+      const imgWidth = 280;
+      const imgHeight = 210;
+      const spacing = 20;
+      const fontSize = 16;
 
-  document.querySelectorAll(".color-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      selectedColor = btn.dataset.color;
+      canvas.width = imgWidth + 40;
+      canvas.height = (images.length * (imgHeight + spacing + fontSize + 10)) + 100;
+
+      // Background/template image if any
+      if (selectedTemplate) {
+        const bg = new Image();
+        bg.src = selectedTemplate;
+        bg.onload = () => {
+          ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+          drawImages();
+        };
+      } else {
+        ctx.fillStyle = selectedColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawImages();
+      }
+    }
+
+    function drawImages() {
+      const imgWidth = 280;
+      const imgHeight = 210;
+      const spacing = 20;
+      const fontSize = 16;
+      let y = 30;
+
+      images.forEach((src, i) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          ctx.drawImage(img, 20, y, imgWidth, imgHeight);
+          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
+          ctx.font = `${fontSize}px Segoe UI`;
+          ctx.textAlign = "center";
+          ctx.fillText(captions[i] || "", canvas.width / 2, y + imgHeight + fontSize + 5);
+          y += imgHeight + spacing + fontSize + 10;
+
+          if (i === images.length - 1) {
+            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 30);
+          }
+        };
+      });
+    }
+
+    drawStrip();
+
+    document.querySelectorAll(".color-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        selectedColor = btn.dataset.color;
+        selectedTemplate = ""; // Clear template
+        document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
+        drawStrip();
+      });
+    });
+
+    document.querySelectorAll(".template-preview").forEach(img => {
+      img.addEventListener("click", () => {
+        selectedTemplate = img.src;
+        document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
+        img.classList.add("selected");
+        drawStrip();
+      });
+    });
+
+    normalStripBtn.addEventListener("click", () => {
+      selectedTemplate = "";
+      document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
       drawStrip();
     });
-  });
 
-  downloadBtn.addEventListener("click", () => {
-    const base64 = canvas.toDataURL("image/png");
-
-    // Download
-    const link = document.createElement("a");
-    link.href = base64;
-    link.download = "photo_strip.png";
-    link.click();
-
-    // Upload to Cloudinary
-    const formData = new FormData();
-    formData.append("file", base64);
-    formData.append("upload_preset", "mypreset");
-
-    fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
-      method: "POST",
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log("✅ Uploaded to Cloudinary:", data.secure_url);
-      alert("Photo Strip Uploaded to Cloudinary!");
-    })
-    .catch(err => {
-      console.error("❌ Upload failed:", err);
-      alert("Upload to Cloudinary failed!");
+    backBtn.addEventListener("click", () => {
+      window.location.href = "home.html";
     });
-  });
-</script>
+
+    downloadBtn.addEventListener("click", () => {
+      const base64 = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = base64;
+      link.download = "photo_strip.png";
+      link.click();
+
+      const formData = new FormData();
+      formData.append("file", base64);
+      formData.append("upload_preset", "mypreset");
+
+      fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log("✅ Uploaded to Cloudinary:", data.secure_url);
+        alert("Photo Strip Uploaded to Cloudinary!");
+      })
+      .catch(err => {
+        console.error("❌ Upload failed:", err);
+        alert("Upload to Cloudinary failed!");
+      });
+    });
+  </script>
 </body>
 </html>
