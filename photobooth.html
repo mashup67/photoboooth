@@ -128,7 +128,6 @@
         // Stickers array to hold sticker objects with their position and source
         const stickers = [];
         let draggedSticker = null;
-        let offsetX, offsetY;
 
         // Function to draw a single sticker with a delete button in a separate layer
         function drawStickers() {
@@ -155,9 +154,9 @@
                     deleteSticker(index);
                 });
 
-                // Add double-click listener to the sticker container (or the image itself)
+                // Add double-click listener to the sticker container
                 stickerContainer.addEventListener('dblclick', (e) => {
-                    e.stopPropagation(); // Prevent double-click from propagating to the canvas
+                    e.stopPropagation(); // Prevent double-click from propagating
                     deleteSticker(index);
                 });
 
@@ -167,7 +166,12 @@
 
                 // Make stickers draggable within the layer
                 img.addEventListener('mousedown', (e) => {
-                    draggedSticker = { sticker, index, initialX: e.clientX, initialY: e.clientY, originalX: sticker.x, originalY: sticker.y };
+                    draggedSticker = {
+                        sticker,
+                        index,
+                        offsetX: e.clientX - sticker.x, // Calculate and store the X offset
+                        offsetY: e.clientY - sticker.y  // Calculate and store the Y offset
+                    };
                     stickerContainer.style.cursor = 'grabbing';
                 });
             });
@@ -243,10 +247,19 @@
         // Drag functionality for placed stickers
         document.addEventListener('mousemove', (e) => {
             if (!draggedSticker) return;
-            const deltaX = e.clientX - draggedSticker.initialX;
-            const deltaY = e.clientY - draggedSticker.initialY;
-            draggedSticker.sticker.x = draggedSticker.originalX + deltaX;
-            draggedSticker.sticker.y = draggedSticker.originalY + deltaY;
+            let newX = e.clientX - draggedSticker.offsetX; // Apply the X offset
+            let newY = e.clientY - draggedSticker.offsetY; // Apply the Y offset
+
+            // Boundary checks
+            const canvasRect = canvas.getBoundingClientRect();
+            const stickerWidth = 60;
+            const stickerHeight = 60;
+
+            newX = Math.max(0, Math.min(newX, canvasRect.width - stickerWidth));
+            newY = Math.max(0, Math.min(newY, canvasRect.height - stickerHeight));
+
+            draggedSticker.sticker.x = newX;
+            draggedSticker.sticker.y = newY;
             drawStickers();
         });
 
@@ -292,7 +305,7 @@
         });
 
         drawStrip();
-        drawStickers(); // Initial drawing of stickers if any exist (though initially it will be empty)
+        drawStickers(); // Initial drawing of stickers
     </script>
 </body>
 </html>
