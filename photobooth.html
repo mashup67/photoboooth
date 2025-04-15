@@ -3,40 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Customize Photo Strip</title>
+  <title>Photo Strip with Sticker Style</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f8f8f8;
+      font-family: 'Arial', sans-serif;
       text-align: center;
-      padding: 30px;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    .sticker-buttons {
+      margin-bottom: 20px;
+    }
+    .sticker-buttons button {
+      padding: 10px 16px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #ddd;
+    }
+    .sticker-buttons button.selected {
+      background-color: hotpink;
+      color: white;
     }
     canvas {
-      border: 8px solid #000;
+      border: 4px solid #444;
       border-radius: 10px;
-      background-color: white;
-    }
-    .color-buttons {
-      margin: 20px auto;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .color-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 3px solid #fff;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
-      cursor: pointer;
-    }
-    .caption-inputs input {
-      margin: 5px;
-      padding: 6px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      width: 240px;
+      margin-top: 10px;
     }
     #downloadBtn {
       margin-top: 20px;
@@ -51,155 +48,122 @@
     #downloadBtn:hover {
       background-color: deeppink;
     }
-    .stickers {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 20px;
-    }
-    .stickers img {
-      width: 60px;
-      cursor: grab;
-    }
   </style>
 </head>
 <body>
 
-  <h2>Customize Your Photo Strip</h2>
-
-  <div class="color-buttons">
-    <div class="color-btn" style="background: white;" data-color="#ffffff"></div>
-    <div class="color-btn" style="background: pink;" data-color="#ffc0cb"></div>
-    <div class="color-btn" style="background: lightblue;" data-color="#add8e6"></div>
-    <div class="color-btn" style="background: lightyellow;" data-color="#ffffe0"></div>
-    <div class="color-btn" style="background: lightgreen;" data-color="#90ee90"></div>
-    <div class="color-btn" style="background: black;" data-color="#000000"></div>
+  <h2>Select Sticker Style</h2>
+  <div class="sticker-buttons">
+    <button onclick="selectStyle('hearts')">💖 Hearts</button>
+    <button onclick="selectStyle('stars')">⭐ Stars</button>
+    <button onclick="selectStyle('emojis')">😊 Emojis</button>
   </div>
 
-  <div class="caption-inputs" id="captionInputs"></div>
-
-  <canvas id="stripCanvas" width="320" height="900"></canvas><br>
-
-  <h3>🧸 Drag a sticker onto the canvas</h3>
-  <div class="stickers">
-    <img src="6381550.png" draggable="true" />
-    <img src="https://i.imgur.com/WVfJkn3.png" draggable="true" />
-    <img src="https://i.imgur.com/pGr0YzP.png" draggable="true" />
-    <img src="https://i.imgur.com/klU5mnx.png" draggable="true" />
-  </div>
-
+  <canvas id="stripCanvas" width="320" height="850"></canvas><br>
   <button id="downloadBtn">⬇️ Download Strip</button>
 
   <script>
     const canvas = document.getElementById("stripCanvas");
     const ctx = canvas.getContext("2d");
     const downloadBtn = document.getElementById("downloadBtn");
-    const captionInputs = document.getElementById("captionInputs");
 
-    let selectedColor = "#ffffff";
     const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
-    let captions = Array(images.length).fill("");
 
-    // Stickers array
-    const stickers = [];
+    const stickerSets = {
+      hearts: [
+        "4.png",
+        "3.png",
+        "2.png"
+      ],
+      stars: [
+        "https://cdn-icons-png.flaticon.com/512/616/616408.png",
+        "https://cdn-icons-png.flaticon.com/512/3039/3039436.png",
+        "https://cdn-icons-png.flaticon.com/512/742/742751.png"
+      ],
+      emojis: [
+        "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+        "https://cdn-icons-png.flaticon.com/512/826/826070.png",
+        "https://cdn-icons-png.flaticon.com/512/3601/3601331.png"
+      ]
+    };
 
-    // Draw strip initially
+    let selectedStickers = [];
+
+    function selectStyle(style) {
+      selectedStickers = stickerSets[style];
+      document.querySelectorAll('.sticker-buttons button').forEach(btn => btn.classList.remove('selected'));
+      event.target.classList.add('selected');
+      drawStrip();
+    }
+
     function drawStrip() {
-      ctx.fillStyle = selectedColor;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      const imgWidth = 280;
+      const imgHeight = 210;
+      const spacing = 20;
       let y = 30;
+
       images.forEach((src, i) => {
         const img = new Image();
         img.src = src;
         img.onload = () => {
-          ctx.drawImage(img, 20, y, 280, 210);
-          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
-          ctx.font = "16px Segoe UI";
-          ctx.textAlign = "center";
-          ctx.fillText(captions[i] || "", canvas.width / 2, y + 230);
-          y += 260;
+          ctx.drawImage(img, 20, y, imgWidth, imgHeight);
+          y += imgHeight + spacing;
+
           if (i === images.length - 1) {
-            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 20);
+            setTimeout(() => {
+              drawStickers();
+              drawTimestamp();
+            }, 200);
           }
         };
       });
-
-      stickers.forEach(s => {
-        const sticker = new Image();
-        sticker.src = s.src;
-        sticker.onload = () => ctx.drawImage(sticker, s.x, s.y, 60, 60);
-      });
     }
 
-    // Caption Inputs
-    captionInputs.innerHTML = "";
-    images.forEach((_, i) => {
-      const input = document.createElement("input");
-      input.placeholder = `Caption for photo ${i + 1}`;
-      input.addEventListener("input", e => {
-        captions[i] = e.target.value;
-        drawStrip();
-      });
-      captionInputs.appendChild(input);
-    });
+    function drawStickers() {
+      if (!selectedStickers.length) return;
 
-    // Color buttons
-    document.querySelectorAll(".color-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        selectedColor = btn.dataset.color;
-        drawStrip();
-      });
-    });
+      const used = new Set();
+      let count = 0;
+      while (count < 8) {
+        const i = Math.floor(Math.random() * selectedStickers.length);
+        const sticker = new Image();
+        sticker.src = selectedStickers[i];
+        sticker.onload = () => {
+          const x = Math.random() * (canvas.width - 60);
+          const y = Math.random() * (canvas.height - 60);
+          const size = 40 + Math.random() * 30;
+          ctx.drawImage(sticker, x, y, size, size);
+        };
+        count++;
+      }
+    }
 
-    // Drag-and-drop stickers
-    document.querySelectorAll(".stickers img").forEach(sticker => {
-      sticker.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("src", sticker.src);
-      });
-    });
+    function drawTimestamp() {
+      ctx.fillStyle = "#000";
+      ctx.font = "14px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 20);
+    }
 
-    canvas.addEventListener("dragover", e => e.preventDefault());
-    canvas.addEventListener("drop", e => {
-      e.preventDefault();
-      const src = e.dataTransfer.getData("src");
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left - 30;
-      const y = e.clientY - rect.top - 30;
-      stickers.push({ src, x, y });
-      drawStrip();
-    });
-
-    // Download & Upload
     downloadBtn.addEventListener("click", () => {
-      const base64 = canvas.toDataURL("image/png");
-
-      const link = document.createElement("a");
-      link.href = base64;
-      link.download = "photo_strip.png";
-      link.click();
-
-      const formData = new FormData();
-      formData.append("file", base64);
-      formData.append("upload_preset", "mypreset");
-
-      fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("✅ Uploaded to Cloudinary:", data.secure_url);
-        alert("Photo Strip Uploaded!");
-      })
-      .catch(err => {
-        console.error("❌ Upload failed:", err);
-        alert("Upload failed!");
-      });
+      try {
+        const dataUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "photo_strip.png";
+        link.click();
+      } catch (e) {
+        alert("Error saving image: " + e.message);
+        console.error(e);
+      }
     });
 
-    drawStrip();
+    // Optional: Default style auto-selected
+    selectStyle('hearts');
   </script>
 </body>
 </html>
