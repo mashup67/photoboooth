@@ -15,7 +15,7 @@
             border: 8px solid #000;
             border-radius: 10px;
             background-color: white;
-            position: relative; /* For absolute positioning of delete button */
+            position: relative; /* For absolute positioning of sticker containers */
         }
         .color-buttons {
             margin: 20px auto;
@@ -63,6 +63,9 @@
             width: 60px;
             cursor: grab;
         }
+        .sticker-container {
+            position: absolute;
+        }
         .delete-btn {
             position: absolute;
             width: 20px;
@@ -74,11 +77,9 @@
             line-height: 20px;
             text-align: center;
             cursor: pointer;
-            display: none; /* Initially hidden */
             user-select: none;
-        }
-        .sticker-container {
-            position: absolute;
+            top: -10px;
+            right: -10px;
         }
     </style>
 </head>
@@ -97,7 +98,11 @@
 
     <div class="caption-inputs" id="captionInputs"></div>
 
-    <canvas id="stripCanvas" width="320" height="900"></canvas><br>
+    <div style="position: relative;">
+        <canvas id="stripCanvas" width="320" height="900"></canvas>
+        <div id="stickerLayer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+    </div>
+    <br>
 
     <h3>🧸 Drag a sticker onto the canvas</h3>
     <div class="stickers">
@@ -114,6 +119,7 @@
         const ctx = canvas.getContext("2d");
         const downloadBtn = document.getElementById("downloadBtn");
         const captionInputs = document.getElementById("captionInputs");
+        const stickerLayer = document.getElementById("stickerLayer");
 
         let selectedColor = "#ffffff";
         const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
@@ -121,15 +127,56 @@
 
         // Stickers array to hold sticker objects with their position and source
         const stickers = [];
-        let selectedStickerIndex = -1; // To track the currently selected sticker for deletion
+        let draggedSticker = null;
+        let offsetX, offsetY;
 
-        // Function to draw a single sticker with a delete button
-        function drawSticker(sticker, index) {
-            const img = new Image();
-            img.src = sticker.src;
-            img.onload = () => {
-                ctx.drawImage(img, sticker.x, sticker.y, 60, 60);
-            };
+        // Function to draw a single sticker with a delete button in a separate layer
+        function drawStickers() {
+            stickerLayer.innerHTML = ''; // Clear the sticker layer
+            stickers.forEach((sticker, index) => {
+                const stickerContainer = document.createElement('div');
+                stickerContainer.classList.add('sticker-container');
+                stickerContainer.style.position = 'absolute';
+                stickerContainer.style.left = `${sticker.x}px`;
+                stickerContainer.style.top = `${sticker.y}px`;
+                stickerContainer.style.pointerEvents = 'auto'; // Make container interactive
+
+                const img = document.createElement('img');
+                img.src = sticker.src;
+                img.style.width = '60px';
+                img.style.height = '60px';
+                img.style.cursor = 'grab';
+
+                const deleteBtn = document.createElement('div');
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.innerText = 'x';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent click on container
+                    deleteSticker(index);
+                });
+
+                // Add double-click listener to the sticker container (or the image itself)
+                stickerContainer.addEventListener('dblclick', (e) => {
+                    e.stopPropagation(); // Prevent double-click from propagating to the canvas
+                    deleteSticker(index);
+                });
+
+                stickerContainer.appendChild(img);
+                stickerContainer.appendChild(deleteBtn);
+                stickerLayer.appendChild(stickerContainer);
+
+                // Make stickers draggable within the layer
+                img.addEventListener('mousedown', (e) => {
+                    draggedSticker = { sticker, index, initialX: e.clientX, initialY: e.clientY, originalX: sticker.x, originalY: sticker.y };
+                    stickerContainer.style.cursor = 'grabbing';
+                });
+            });
+        }
+
+        function deleteSticker(index) {
+            stickers.splice(index, 1);
+            drawStrip();
+            drawStickers();
         }
 
         // Draw strip function
@@ -153,10 +200,6 @@
                     }
                 };
             });
-
-            stickers.forEach((sticker, index) => {
-                drawSticker(sticker, index);
-            });
         }
 
         // Caption Inputs
@@ -179,7 +222,7 @@
             });
         });
 
-        // Drag-and-drop stickers
+        // Drag-and-drop stickers from the palette
         document.querySelectorAll(".stickers img").forEach(sticker => {
             sticker.addEventListener("dragstart", e => {
                 e.dataTransfer.setData("src", sticker.src);
@@ -194,46 +237,35 @@
             const x = e.clientX - rect.left - 30;
             const y = e.clientY - rect.top - 30;
             stickers.push({ src, x, y });
-            drawStrip();
+            drawStickers(); // Draw stickers on the overlay layer
         });
 
-        // Event listener for clicking on the canvas to select/deselect stickers
-        canvas.addEventListener("click", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-
-            selectedStickerIndex = -1; // Deselect any previously selected sticker
-
-            for (let i = stickers.length - 1; i >= 0; i--) {
-                const sticker = stickers[i];
-                if (clickX >= sticker.x && clickX <= sticker.x + 60 && clickY >= sticker.y && clickY <= sticker.y + 60) {
-                    selectedStickerIndex = i;
-                    break; // Select the topmost sticker
-                }
-            }
-            drawStrip(); // Redraw to potentially show/hide delete button (we'll handle this differently now)
+        // Drag functionality for placed stickers
+        document.addEventListener('mousemove', (e) => {
+            if (!draggedSticker) return;
+            const deltaX = e.clientX - draggedSticker.initialX;
+            const deltaY = e.clientY - draggedSticker.initialY;
+            draggedSticker.sticker.x = draggedSticker.originalX + deltaX;
+            draggedSticker.sticker.y = draggedSticker.originalY + deltaY;
+            drawStickers();
         });
 
-        // Event listener for double-clicking to delete a sticker
-        canvas.addEventListener("dblclick", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-
-            for (let i = stickers.length - 1; i >= 0; i--) {
-                const sticker = stickers[i];
-                if (clickX >= sticker.x && clickX <= sticker.x + 60 && clickY >= sticker.y && clickY <= sticker.y + 60) {
-                    stickers.splice(i, 1);
-                    drawStrip();
-                    break;
+        document.addEventListener('mouseup', () => {
+            if (draggedSticker) {
+                const stickerContainer = stickerLayer.children[draggedSticker.index];
+                if (stickerContainer) {
+                    stickerContainer.style.cursor = 'grab';
                 }
+                draggedSticker = null;
             }
         });
 
         // Download & Upload
         downloadBtn.addEventListener("click", () => {
+            // First, temporarily hide the sticker layer to only download the canvas
+            stickerLayer.style.display = 'none';
             const base64 = canvas.toDataURL("image/png");
+            stickerLayer.style.display = 'block'; // Then show it again
 
             const link = document.createElement("a");
             link.href = base64;
@@ -260,7 +292,7 @@
         });
 
         drawStrip();
+        drawStickers(); // Initial drawing of stickers if any exist (though initially it will be empty)
     </script>
 </body>
 </html>
-
