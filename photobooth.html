@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f0f0;
+      background-color: #f8f8f8;
       text-align: center;
       padding: 30px;
     }
@@ -16,15 +16,12 @@
       border-radius: 10px;
       background-color: white;
     }
-    .color-buttons, .template-row {
+    .color-buttons {
       margin: 20px auto;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 12px;
-    }
-    .color-btn, .template-preview {
-      cursor: pointer;
     }
     .color-btn {
       width: 40px;
@@ -32,33 +29,16 @@
       border-radius: 50%;
       border: 3px solid #fff;
       box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    }
-    .template-preview {
-      width: 90px;
-      height: 160px;
-      border: 2px solid transparent;
-      object-fit: cover;
-      border-radius: 6px;
-      transition: transform 0.2s ease;
-    }
-    .template-preview.selected {
-      border-color: deeppink;
-      transform: scale(1.05);
-    }
-    .caption-inputs {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      margin: 20px 0;
+      cursor: pointer;
     }
     .caption-inputs input {
-      width: 240px;
+      margin: 5px;
       padding: 6px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      width: 240px;
     }
-    button {
+    #downloadBtn {
       margin-top: 20px;
       padding: 12px 24px;
       font-size: 16px;
@@ -68,12 +48,24 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    button:hover {
+    #downloadBtn:hover {
       background-color: deeppink;
+    }
+    .stickers {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px;
+    }
+    .stickers img {
+      width: 60px;
+      cursor: grab;
     }
   </style>
 </head>
 <body>
+
   <h2>Customize Your Photo Strip</h2>
 
   <div class="color-buttons">
@@ -85,18 +77,19 @@
     <div class="color-btn" style="background: black;" data-color="#000000"></div>
   </div>
 
-  <h3>Select a Template</h3>
-  <div class="template-row">
-    <img src="Grey Minimalist Aesthetic Photo Collage Instagram Story.png" class="template-preview" data-template="template1">
-    <img src="Vintage Happy Birthday Greetings Instagram Story.png" class="template-preview" data-template="template2">
-    <img src="Grey Scrapbook Photo Collage Friends Instagram Story.png" class="template-preview" data-template="template3">
-    <img src="Pink and Red Creative Playful Illustration Collage Couple Valentines Day Photo Strips (1)" class="template-preview" data-template="template4">
-  </div>
-
   <div class="caption-inputs" id="captionInputs"></div>
 
-  <canvas id="stripCanvas" width="320" height="850"></canvas><br>
-  <button id="downloadBtn">⬇️ Download & Upload</button>
+  <canvas id="stripCanvas" width="320" height="900"></canvas><br>
+
+  <h3>🧸 Drag a sticker onto the canvas</h3>
+  <div class="stickers">
+    <img src="https://i.imgur.com/Uo1QzFt.png" draggable="true" />
+    <img src="https://i.imgur.com/WVfJkn3.png" draggable="true" />
+    <img src="https://i.imgur.com/pGr0YzP.png" draggable="true" />
+    <img src="https://i.imgur.com/klU5mnx.png" draggable="true" />
+  </div>
+
+  <button id="downloadBtn">⬇️ Download Strip</button>
 
   <script>
     const canvas = document.getElementById("stripCanvas");
@@ -104,38 +97,44 @@
     const downloadBtn = document.getElementById("downloadBtn");
     const captionInputs = document.getElementById("captionInputs");
 
-    const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
     let selectedColor = "#ffffff";
-    let selectedTemplate = "";
+    const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
     let captions = Array(images.length).fill("");
 
-    const templateLayouts = {
-      template1: [
-        { x: 60, y: 100, w: 180, h: 135 },
-        { x: 60, y: 250, w: 180, h: 135 },
-        { x: 60, y: 400, w: 180, h: 135 },
-        { x: 60, y: 550, w: 180, h: 135 }
-      ],
-      template2: [
-        { x: 50, y: 130, w: 200, h: 130 },
-        { x: 50, y: 290, w: 200, h: 130 },
-        { x: 50, y: 450, w: 200, h: 130 },
-        { x: 50, y: 610, w: 200, h: 130 }
-      ],
-      template3: [
-        { x: 40, y: 120, w: 220, h: 140 },
-        { x: 40, y: 280, w: 220, h: 140 },
-        { x: 40, y: 440, w: 220, h: 140 },
-        { x: 40, y: 600, w: 220, h: 140 }
-      ],
-      template4: [
-        { x: 65, y: 150, w: 170, h: 120 },
-        { x: 65, y: 290, w: 170, h: 120 },
-        { x: 65, y: 430, w: 170, h: 120 },
-        { x: 65, y: 570, w: 170, h: 120 }
-      ]
-    };
+    // Stickers array
+    const stickers = [];
 
+    // Draw strip initially
+    function drawStrip() {
+      ctx.fillStyle = selectedColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      let y = 30;
+      images.forEach((src, i) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          ctx.drawImage(img, 20, y, 280, 210);
+          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
+          ctx.font = "16px Segoe UI";
+          ctx.textAlign = "center";
+          ctx.fillText(captions[i] || "", canvas.width / 2, y + 230);
+          y += 260;
+          if (i === images.length - 1) {
+            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 20);
+          }
+        };
+      });
+
+      stickers.forEach(s => {
+        const sticker = new Image();
+        sticker.src = s.src;
+        sticker.onload = () => ctx.drawImage(sticker, s.x, s.y, 60, 60);
+      });
+    }
+
+    // Caption Inputs
+    captionInputs.innerHTML = "";
     images.forEach((_, i) => {
       const input = document.createElement("input");
       input.placeholder = `Caption for photo ${i + 1}`;
@@ -146,84 +145,36 @@
       captionInputs.appendChild(input);
     });
 
-    function drawStrip() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (selectedTemplate) {
-        const bg = new Image();
-        bg.crossOrigin = "anonymous";
-        bg.src = selectedTemplate;
-        bg.onload = () => {
-          ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-          drawImagesOnTemplate();
-        };
-      } else {
-        ctx.fillStyle = selectedColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        drawImagesPlain();
-      }
-    }
-
-    function drawImagesOnTemplate() {
-      const key = Object.entries(templateLayouts).find(([k]) => selectedTemplate.includes(k))?.[0];
-      if (!key) return;
-      const layout = templateLayouts[key];
-      images.forEach((src, i) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-          const { x, y, w, h } = layout[i];
-          ctx.drawImage(img, x, y, w, h);
-          ctx.fillStyle = "black";
-          ctx.font = "14px Segoe UI";
-          ctx.textAlign = "center";
-          ctx.fillText(captions[i] || "", x + w / 2, y + h + 18);
-          if (i === images.length - 1) {
-            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 25);
-          }
-        };
-      });
-    }
-
-    function drawImagesPlain() {
-      const w = 280, h = 210, spacing = 20, fontSize = 16;
-      let y = 30;
-      images.forEach((src, i) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-          ctx.drawImage(img, 20, y, w, h);
-          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
-          ctx.font = `${fontSize}px Segoe UI`;
-          ctx.textAlign = "center";
-          ctx.fillText(captions[i] || "", canvas.width / 2, y + h + fontSize + 5);
-          y += h + spacing + fontSize + 10;
-          if (i === images.length - 1) {
-            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 30);
-          }
-        };
-      });
-    }
-
+    // Color buttons
     document.querySelectorAll(".color-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         selectedColor = btn.dataset.color;
-        selectedTemplate = "";
-        document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
         drawStrip();
       });
     });
 
-    document.querySelectorAll(".template-preview").forEach(img => {
-      img.addEventListener("click", () => {
-        selectedTemplate = img.src;
-        document.querySelectorAll(".template-preview").forEach(t => t.classList.remove("selected"));
-        img.classList.add("selected");
-        drawStrip();
+    // Drag-and-drop stickers
+    document.querySelectorAll(".stickers img").forEach(sticker => {
+      sticker.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("src", sticker.src);
       });
     });
 
+    canvas.addEventListener("dragover", e => e.preventDefault());
+    canvas.addEventListener("drop", e => {
+      e.preventDefault();
+      const src = e.dataTransfer.getData("src");
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left - 30;
+      const y = e.clientY - rect.top - 30;
+      stickers.push({ src, x, y });
+      drawStrip();
+    });
+
+    // Download & Upload
     downloadBtn.addEventListener("click", () => {
       const base64 = canvas.toDataURL("image/png");
+
       const link = document.createElement("a");
       link.href = base64;
       link.download = "photo_strip.png";
@@ -237,15 +188,15 @@
         method: "POST",
         body: formData
       })
-        .then(res => res.json())
-        .then(data => {
-          console.log("✅ Uploaded to Cloudinary:", data.secure_url);
-          alert("Photo Strip Uploaded to Cloudinary!");
-        })
-        .catch(err => {
-          console.error("❌ Upload failed:", err);
-          alert("Upload to Cloudinary failed!");
-        });
+      .then(res => res.json())
+      .then(data => {
+        console.log("✅ Uploaded to Cloudinary:", data.secure_url);
+        alert("Photo Strip Uploaded!");
+      })
+      .catch(err => {
+        console.error("❌ Upload failed:", err);
+        alert("Upload failed!");
+      });
     });
 
     drawStrip();
