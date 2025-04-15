@@ -164,7 +164,7 @@
             drawStickers();
         }
 
-        // Draw strip function
+        // Draw strip initially
         function drawStrip() {
             ctx.fillStyle = selectedColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -184,6 +184,12 @@
                         ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 20);
                     }
                 };
+            });
+
+            stickers.forEach(s => {
+                const sticker = new Image();
+                sticker.src = s.src;
+                sticker.onload = () => ctx.drawImage(sticker, s.x, s.y, 60, 60);
             });
         }
 
@@ -207,7 +213,7 @@
             });
         });
 
-        // Drag-and-drop stickers from the palette
+        // Drag-and-drop stickers
         document.querySelectorAll(".stickers img").forEach(sticker => {
             sticker.addEventListener("dragstart", e => {
                 e.dataTransfer.setData("src", sticker.src);
@@ -222,7 +228,7 @@
             const x = e.clientX - rect.left - 30;
             const y = e.clientY - rect.top - 30;
             stickers.push({ src, x, y });
-            drawStickers(); // Draw stickers on the overlay layer
+            drawStickers();
         });
 
         // Download & Upload
@@ -257,7 +263,7 @@
         });
 
         drawStrip();
-        drawStickers(); // Initial drawing of stickers
+        drawStickers();
     </script>
 </body>
 </html>
