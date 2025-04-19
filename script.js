@@ -19,7 +19,8 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const captureButton = document.getElementById("captureBtn");
-const autoCaptureButton = document.getElementById("autoCaptureBtn");
+const autoCaptureButton = document.getElementById("autoCaptureButton"); // 🆕 corrected id
+const photoCountSelect = document.getElementById("photoCountSelect");   // 🆕 corrected id
 const stripButton = document.getElementById("generateBtn");
 const thumbnailsBox = document.getElementById("thumbnails");
 
@@ -44,6 +45,16 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
   });
 });
 
+// ✅ Capture Single Photo
+captureButton.addEventListener("click", () => {
+  if (capturedPhotos.length >= 4) {
+    alert("Max 4 photos allowed!");
+    return;
+  }
+  capturePhoto();
+});
+
+// ✅ Auto-Capture with Countdown
 autoCaptureButton.addEventListener("click", () => {
   if (capturedPhotos.length > 0 && !confirm("Clear old photos?")) return;
 
@@ -54,8 +65,7 @@ autoCaptureButton.addEventListener("click", () => {
   const interval = parseInt(document.getElementById("interval").value); // ms
   let count = 0;
 
-  // NEW: Get number of photos from dropdown
-  const numPhotos = parseInt(document.getElementById("autoCaptureBtn").value.split(" ")[0]);
+  const numPhotos = parseInt(photoCountSelect.value.split(" ")[0]); // 🆕 get selected number
 
   // Create countdown overlay
   const countdownOverlay = document.createElement("div");
@@ -90,7 +100,7 @@ autoCaptureButton.addEventListener("click", () => {
   }
 
   function takeNextPhoto() {
-    if (count >= numPhotos) { // ✅ use selected number of photos
+    if (count >= numPhotos) { // ✅ stop after selected photos
       countdownOverlay.remove();
       return;
     }
@@ -105,8 +115,6 @@ autoCaptureButton.addEventListener("click", () => {
 
   takeNextPhoto();
 });
-
-
 
 // ✅ Capture Helper Function
 function capturePhoto() {
@@ -140,6 +148,8 @@ function capturePhoto() {
   img.src = dataUrl;
   capturedPhotos.push(img);
 }
+
+// ✅ Generate Strip
 stripButton.addEventListener("click", () => {
   if (capturedPhotos.length === 0) {
     alert("No photos to generate strip!");
