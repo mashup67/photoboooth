@@ -111,137 +111,148 @@
 
   <button id="downloadBtn">⬇️ Download Strip</button>
 
-  <script>
-    const canvas = document.getElementById("stripCanvas");
-    const ctx = canvas.getContext("2d");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const captionInputs = document.getElementById("captionInputs");
+<script>
+  const canvas = document.getElementById("stripCanvas");
+  const ctx = canvas.getContext("2d");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const captionInputs = document.getElementById("captionInputs");
 
-    let selectedColor = "#ffffff";
-    const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
-    let captions = Array(images.length).fill("");
-    const stickers = [];
+  let selectedColor = "#ffffff";
+  const images = JSON.parse(localStorage.getItem("capturedImages") || "[]");
+  let captions = Array(images.length).fill("");
+  const stickers = [];
 
-    function drawStrip() {
-      ctx.fillStyle = selectedColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+  function adjustCanvasSize() {
+    // Each photo area is about 260px + extra padding
+    const perPhotoHeight = 260;
+    const extraBottomSpace = 50;
+    const totalHeight = images.length * perPhotoHeight + extraBottomSpace;
+    canvas.height = totalHeight;
+  }
 
-      let y = 30;
-      images.forEach((src, i) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-          ctx.drawImage(img, 20, y, 280, 210);
-          ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
-          ctx.font = "16px Segoe UI";
-          ctx.textAlign = "center";
-          ctx.fillText(captions[i] || "", canvas.width / 2, y + 230);
-          y += 260;
-          if (i === images.length - 1) {
-            ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 20);
-          }
-        };
-      });
+  function drawStrip() {
+    adjustCanvasSize();
 
-      stickers.forEach(s => {
-        const sticker = new Image();
-        sticker.src = s.src;
-        sticker.onload = () => ctx.drawImage(sticker, s.x, s.y, 60, 60);
-      });
+    ctx.fillStyle = selectedColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      redrawStickersX();
-    }
+    let y = 30;
+    images.forEach((src, i) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        ctx.drawImage(img, 20, y, 280, 210);
+        ctx.fillStyle = selectedColor === "#000000" ? "#fff" : "#000";
+        ctx.font = "16px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillText(captions[i] || "", canvas.width / 2, y + 230);
+        y += 260;
 
-    function createStickerX(index, x, y) {
-      const container = document.querySelector(".canvas-container");
-      const xBtn = document.createElement("div");
-      xBtn.className = "sticker-x";
-      xBtn.textContent = "×";
-      xBtn.style.left = `${x + 30}px`;
-      xBtn.style.top = `${y + 10}px`;
-      xBtn.dataset.index = index;
-
-      xBtn.onclick = () => {
-        stickers.splice(index, 1);
-        redrawStickersX();
-        drawStrip();
+        if (i === images.length - 1) {
+          ctx.fillText("Picapica " + new Date().toLocaleString(), canvas.width / 2, canvas.height - 20);
+        }
       };
-
-      container.appendChild(xBtn);
-    }
-
-    function redrawStickersX() {
-      document.querySelectorAll(".sticker-x").forEach(el => el.remove());
-      stickers.forEach((s, i) => createStickerX(i, s.x, s.y));
-    }
-
-    captionInputs.innerHTML = "";
-    images.forEach((_, i) => {
-      const input = document.createElement("input");
-      input.placeholder = `Caption for photo ${i + 1}`;
-      input.addEventListener("input", e => {
-        captions[i] = e.target.value;
-        drawStrip();
-      });
-      captionInputs.appendChild(input);
     });
 
-    document.querySelectorAll(".color-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        selectedColor = btn.dataset.color;
-        drawStrip();
-      });
+    stickers.forEach(s => {
+      const sticker = new Image();
+      sticker.src = s.src;
+      sticker.onload = () => ctx.drawImage(sticker, s.x, s.y, 60, 60);
     });
 
-    document.querySelectorAll(".stickers img").forEach(sticker => {
-      sticker.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("src", sticker.src);
-      });
-    });
+    redrawStickersX();
+  }
 
-    canvas.addEventListener("dragover", e => e.preventDefault());
+  function createStickerX(index, x, y) {
+    const container = document.querySelector(".canvas-container");
+    const xBtn = document.createElement("div");
+    xBtn.className = "sticker-x";
+    xBtn.textContent = "×";
+    xBtn.style.left = `${x + 30}px`;
+    xBtn.style.top = `${y + 10}px`;
+    xBtn.dataset.index = index;
 
-    canvas.addEventListener("drop", e => {
-      e.preventDefault();
-      const src = e.dataTransfer.getData("src");
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left - 30;
-      const y = e.clientY - rect.top - 30;
+    xBtn.onclick = () => {
+      stickers.splice(index, 1);
+      redrawStickersX();
+      drawStrip();
+    };
 
-      const index = stickers.length;
-      stickers.push({ src, x, y });
-      createStickerX(index, x, y);
+    container.appendChild(xBtn);
+  }
+
+  function redrawStickersX() {
+    document.querySelectorAll(".sticker-x").forEach(el => el.remove());
+    stickers.forEach((s, i) => createStickerX(i, s.x, s.y));
+  }
+
+  captionInputs.innerHTML = "";
+  images.forEach((_, i) => {
+    const input = document.createElement("input");
+    input.placeholder = `Caption for photo ${i + 1}`;
+    input.addEventListener("input", e => {
+      captions[i] = e.target.value;
       drawStrip();
     });
+    captionInputs.appendChild(input);
+  });
 
-    downloadBtn.addEventListener("click", () => {
-      const base64 = canvas.toDataURL("image/png");
-
-      const link = document.createElement("a");
-      link.href = base64;
-      link.download = "photo_strip.png";
-      link.click();
-
-      const formData = new FormData();
-      formData.append("file", base64);
-      formData.append("upload_preset", "mypreset");
-
-      fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("✅ Uploaded to Cloudinary:", data.secure_url);
-        alert("Photo Strip Uploaded!");
-      })
-      .catch(err => {
-        console.error("❌ Upload failed:", err);
-        alert("Upload failed!");
-      });
+  document.querySelectorAll(".color-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedColor = btn.dataset.color;
+      drawStrip();
     });
+  });
 
+  document.querySelectorAll(".stickers img").forEach(sticker => {
+    sticker.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("src", sticker.src);
+    });
+  });
+
+  canvas.addEventListener("dragover", e => e.preventDefault());
+
+  canvas.addEventListener("drop", e => {
+    e.preventDefault();
+    const src = e.dataTransfer.getData("src");
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left - 30;
+    const y = e.clientY - rect.top - 30;
+
+    const index = stickers.length;
+    stickers.push({ src, x, y });
+    createStickerX(index, x, y);
     drawStrip();
-  </script>
+  });
+
+  downloadBtn.addEventListener("click", () => {
+    const base64 = canvas.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = base64;
+    link.download = "photo_strip.png";
+    link.click();
+
+    const formData = new FormData();
+    formData.append("file", base64);
+    formData.append("upload_preset", "mypreset");
+
+    fetch("https://api.cloudinary.com/v1_1/dvcppifw9/image/upload", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("✅ Uploaded to Cloudinary:", data.secure_url);
+      alert("Photo Strip Uploaded!");
+    })
+    .catch(err => {
+      console.error("❌ Upload failed:", err);
+      alert("Upload failed!");
+    });
+  });
+
+  drawStrip();
+</script>
 </body>
 </html>
