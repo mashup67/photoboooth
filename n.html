@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Snapchat Lens Test</title>
+</head>
+<body style="margin:0; padding:0; display:flex; justify-content:center; align-items:center; height:100vh; background-color:#111;">
+
+  <div id="cameraContainer" style="width:360px; height:640px; background:#000;"></div>
+
+  <!-- Import Snapchat Camera Kit SDK -->
+  <script src="https://cdn.snapchat.com/camera-kit-web/sdk/latest/camera-kit-web.min.js"></script>
+
+  <script>
+    async function startSnapCamera() {
+      const session = await window.snapCameraKit.createSession({
+        apiToken: "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzQ1MDgzNzQzLCJzdWIiOiJkNTE5YmYyMi1mODJkLTQ3NmYtYjdlYS0wZTM5ZTJlMGRlZmF-UFJPRFVDVElPTn45MGVkNGJmZi1hOWFiLTQ0MDUtYjhlZC1lNDNjODk1MmU3MDAifQ.QDOQdXuoGy772FzNN4gFHewQfBn4MSsibHdDFGjTeUQ", 
+        lensRepository: { groupIds: ["73ceaff3-4329-4809-a6cf-6eac05e2d9db"] },
+      });
+
+      const camera = await session.camera();
+      await camera.start();
+
+      const container = document.getElementById('cameraContainer');
+      container.appendChild(camera.element());
+    }
+
+    startSnapCamera().catch(console.error);
+  </script>
+
+</body>
+</html>
