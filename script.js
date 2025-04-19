@@ -44,16 +44,6 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
   });
 });
 
-// ✅ Capture Single Photo
-captureButton.addEventListener("click", () => {
-  if (capturedPhotos.length >= 4) {
-    alert("Max 4 photos allowed!");
-    return;
-  }
-  capturePhoto();
-});
-
-// ✅ Auto Capture with Countdown
 autoCaptureButton.addEventListener("click", () => {
   if (capturedPhotos.length > 0 && !confirm("Clear old photos?")) return;
 
@@ -63,6 +53,9 @@ autoCaptureButton.addEventListener("click", () => {
   const flash = document.getElementById("flash-overlay");
   const interval = parseInt(document.getElementById("interval").value); // ms
   let count = 0;
+
+  // NEW: Get number of photos from dropdown
+  const numPhotos = parseInt(document.getElementById("autoCaptureBtn").value.split(" ")[0]);
 
   // Create countdown overlay
   const countdownOverlay = document.createElement("div");
@@ -97,7 +90,7 @@ autoCaptureButton.addEventListener("click", () => {
   }
 
   function takeNextPhoto() {
-    if (count >= 4) {
+    if (count >= numPhotos) { // ✅ use selected number of photos
       countdownOverlay.remove();
       return;
     }
