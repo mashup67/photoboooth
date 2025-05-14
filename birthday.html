@@ -5,23 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Happy Birthday ❤️</title>
   <style>
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
       padding: 0;
       background: linear-gradient(to bottom, #ffccff, #ffe6e6);
       font-family: 'Comic Sans MS', cursive, sans-serif;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    .container {
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
       text-align: center;
-      padding: 2rem 1rem;
     }
 
-    .birthday-text {
+    h1.birthday-text {
       font-size: 2.5rem;
       color: #ff1493;
       animation: pop 1s ease-in-out infinite alternate;
+      margin-bottom: 0.5rem;
     }
 
     @keyframes pop {
@@ -31,16 +37,15 @@
 
     .cake {
       position: relative;
-      margin: 2rem auto;
       width: 150px;
       height: 180px;
+      margin: 0 auto;
     }
 
     .layer {
       position: absolute;
       width: 150px;
       height: 40px;
-      background: #ff69b4;
       border-radius: 10px;
     }
 
@@ -65,11 +70,11 @@
     }
 
     .message {
-      margin-top: 1rem;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #d63384;
-      animation: fadeIn 4s ease-in;
       font-style: italic;
+      animation: fadeIn 4s ease;
+      margin-top: 0.8rem;
     }
 
     @keyframes fadeIn {
@@ -79,13 +84,70 @@
 
     .emojis {
       font-size: 2rem;
-      margin: 1rem 0;
       animation: bounce 1s infinite alternate;
+      margin: 0.8rem 0;
     }
 
     @keyframes bounce {
       from { transform: translateY(0); }
       to { transform: translateY(-10px); }
+    }
+
+    #countdown {
+      font-size: 1.3rem;
+      color: #cc007a;
+      margin: 0.5rem auto;
+      font-weight: bold;
+    }
+
+    .buttons {
+      margin-top: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      margin: 10px;
+      background-color: #ff66cc;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e60073;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .popup-content {
+      background-color: #fff0f5;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 15px;
+      width: 80%;
+      max-width: 400px;
+      text-align: left;
+      font-family: 'Courier New', cursive;
+      font-size: 1.1rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .close {
+      float: right;
+      font-size: 1.5rem;
+      color: #d00;
+      cursor: pointer;
     }
 
     #confetti {
@@ -105,24 +167,74 @@
     Your browser does not support the audio element.
   </audio>
 
-  <div class="container">
-    <h1 class="birthday-text">🎉 Happy Birthday My Love! 🎉</h1>
-
-    <div class="cake">
-      <div class="candle"></div>
-      <div class="layer layer1"></div>
-      <div class="layer layer2"></div>
-      <div class="layer layer3"></div>
-    </div>
-
-    <p class="message">You're the cherry on top of my life. Love you forever! 💖</p>
-
-    <div class="emojis">🕺💃🎂🎁🎉🎊</div>
-  </div>
-
   <canvas id="confetti"></canvas>
 
+  <h1 class="birthday-text">🎉 Happy Birthday My Love! 🎉</h1>
+
+  <div id="countdown">⏳ Countdown to your birthday...</div>
+
+  <div class="cake">
+    <div class="candle"></div>
+    <div class="layer layer1"></div>
+    <div class="layer layer2"></div>
+    <div class="layer layer3"></div>
+  </div>
+
+  <p class="message">You light up my life like this candle 💖</p>
+  <div class="emojis">🕺💃🎂🎁🎉🎊</div>
+
+  <div class="buttons">
+    <button class="btn" onclick="openPopup()">💌 Read My Love Letter</button>
+    <button class="btn" onclick="goToGift()">🎁 Surprise Gift</button>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">&times;</span>
+      <p>Dear Love,</p>
+      <p>You are the most precious person in my world. I made this just for you, hoping it makes you smile on your special day.</p>
+      <p>Happy Birthday again, my heart beats only for you! 💗</p>
+      <p>Forever yours,<br/>[Your Name]</p>
+    </div>
+  </div>
+
   <script>
+    // Countdown
+    function updateCountdown() {
+      const bday = new Date("May 17, 2025 00:00:00").getTime();
+      const now = new Date().getTime();
+      const diff = bday - now;
+
+      if (diff <= 0) {
+        document.getElementById("countdown").innerHTML = "🎉 It's your birthday today!! 🎉";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("countdown").innerHTML = 
+        `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s until your big day! 🎈`;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Love letter popup
+    function openPopup() {
+      document.getElementById("popup").style.display = "block";
+    }
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    // Gift link
+    function goToGift() {
+      window.location.href = "https://example.com/your-gift"; // replace with real link
+    }
+
     // Confetti
     const canvas = document.getElementById("confetti");
     const ctx = canvas.getContext("2d");
@@ -143,7 +255,7 @@
       });
     }
 
-    function draw() {
+    function drawConfetti() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       confetti.forEach(c => {
         ctx.beginPath();
@@ -153,10 +265,10 @@
         ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
         ctx.stroke();
       });
-      update();
+      updateConfetti();
     }
 
-    function update() {
+    function updateConfetti() {
       confetti.forEach(c => {
         c.tiltAngle += c.tiltAngleIncremental;
         c.y += (Math.cos(c.d) + 1 + c.r / 2) / 2;
@@ -168,9 +280,9 @@
       });
     }
 
-    (function animateConfetti() {
-      draw();
-      requestAnimationFrame(animateConfetti);
+    (function loop() {
+      drawConfetti();
+      requestAnimationFrame(loop);
     })();
   </script>
 </body>
