@@ -162,10 +162,14 @@
   </style>
 </head>
 <body>
-  <audio autoplay loop>
+  <!-- Hidden audio element -->
+  <audio id="birthday-audio" loop>
     <source src="birthday.mp3" type="audio/mpeg" />
     Your browser does not support the audio element.
   </audio>
+
+  <!-- Play button to trigger audio -->
+  <button id="play-audio-btn" class="btn">🎶 Play Happy Birthday Song</button>
 
   <canvas id="confetti"></canvas>
 
@@ -200,7 +204,7 @@
   </div>
 
   <script>
-    // Countdown
+    // Countdown function
     function updateCountdown() {
       const bday = new Date("May 17, 2025 00:00:00").getTime();
       const now = new Date().getTime();
@@ -222,7 +226,7 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // Love letter popup
+    // Love letter popup functions
     function openPopup() {
       document.getElementById("popup").style.display = "block";
     }
@@ -230,12 +234,12 @@
       document.getElementById("popup").style.display = "none";
     }
 
-    // Gift link
+    // Gift link function
     function goToGift() {
-      window.location.href = "https://mashup67.github.io/photoboooth/hehe.html"; // replace with real link
+      window.location.href = "https://mashup67.github.io/photoboooth/hehe.html"; // Replace with real link
     }
 
-    // Confetti
+    // Confetti animation
     const canvas = document.getElementById("confetti");
     const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
@@ -273,17 +277,20 @@
         c.tiltAngle += c.tiltAngleIncremental;
         c.y += (Math.cos(c.d) + 1 + c.r / 2) / 2;
         c.tilt = Math.sin(c.tiltAngle - c.d / 3) * 15;
-        if (c.y > canvas.height) {
-          c.x = Math.random() * canvas.width;
-          c.y = -20;
-        }
       });
     }
 
-    (function loop() {
-      drawConfetti();
-      requestAnimationFrame(loop);
-    })();
+    function startConfetti() {
+      setInterval(drawConfetti, 30);
+    }
+
+    // Audio play functionality
+    document.getElementById("play-audio-btn").addEventListener("click", function() {
+      var audio = document.getElementById("birthday-audio");
+      audio.play(); // Play the audio when the button is clicked
+      this.style.display = "none"; // Hide the button after it plays
+      startConfetti(); // Start the confetti animation
+    });
   </script>
 </body>
 </html>
