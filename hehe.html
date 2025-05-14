@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎁 Your Surprise Gift!</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(to right, #ffe6f0, #ffe6ff);
+      font-family: 'Comic Sans MS', cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #ff1493;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #cc007a;
+      margin: 1rem 20px;
+      max-width: 500px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background-color: #ff66cc;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e60073;
+    }
+
+    #secretMessage {
+      display: none;
+      font-size: 1.5rem;
+      color: #ff1493;
+      margin-top: 20px;
+    }
+
+    .heart {
+      font-size: 2rem;
+      color: red;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Surprise! 🎁</h1>
+  <p>I’ve got something really special for you... but it's a secret for now!</p>
+  <button class="btn" onclick="revealSecret()">Click Here for a Surprise!</button>
+
+  <div id="secretMessage">
+    <p class="heart">❤️ Here's my secret: You mean the world to me. Happy Birthday, my love! ❤️</p>
+    <p>Enjoy every moment of your day, and know that you are always in my heart. 💖</p>
+    <p>Surprise! 😘</p>
+  </div>
+
+  <script>
+    function revealSecret() {
+      document.getElementById('secretMessage').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
