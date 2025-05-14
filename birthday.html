@@ -4,174 +4,113 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Happy Birthday!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      margin: 0;
-      overflow: hidden;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background-color: #fef08a;
-      color: #eab308;
-    }
-    #birthday-heading {
-      font-size: 3em;
-      font-weight: 600;
-      margin-bottom: 20px;
-      animation: fadeIn 2s ease, pulse 2s infinite alternate;
-      color: #f43f5e;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.1); }
-    }
-    #cake-canvas {
-      margin-bottom: 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-    #message-box {
-      background-color: #fff7ed;
-      padding: 20px;
-      border-radius: 8px;
+      background: linear-gradient(135deg, #ffe4e6, #fcd34d);
+      color: #1f2937;
       text-align: center;
-      font-size: 1.2em;
-      color: #1e293b;
-      max-width: 80%;
+      overflow-x: hidden;
     }
-    #fireworks-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 10;
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3em;
+      margin-top: 50px;
+      color: #f43f5e;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .cake {
+      width: 200px;
+      margin: 30px auto;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .message {
+      font-size: 1.2em;
+      padding: 20px;
+      max-width: 90%;
+      margin: auto;
+      background: #fff7ed;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .funny {
+      margin-top: 30px;
+      font-size: 2em;
+      animation: wiggle 1s infinite;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 2em; }
+      .message { font-size: 1em; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="birthday-heading">Happy Birthday, My Love!</h1>
-    <canvas id="cake-canvas" width="300" height="200"></canvas>
-    <div id="message-box">
-      I hope your day is as amazing as you are. I love you more than words can say! ❤️
-    </div>
-    <canvas id="fireworks-canvas"></canvas>
+
+  <h1>Happy Birthday, Love! 🎉</h1>
+
+  <img src="https://cdn.pixabay.com/photo/2022/05/10/10/00/birthday-7185612_960_720.png" class="cake" alt="Cake" />
+
+  <div class="message">
+    Hey beautiful! 💖<br/>
+    I just want to say you're the sweetest slice of cake in my life 🍰. <br/>
+    Hope your day is as magical as you are!
   </div>
 
+  <div class="funny">🐱💃🏻 Dancing Kitty says: “PARTY TIME!”</div>
+
   <script>
-    // Cake drawing
-    const cakeCanvas = document.getElementById('cake-canvas');
-    const cakeCtx = cakeCanvas.getContext('2d');
+    // Optional confetti (just for fun)
+    const emoji = ["🎉", "🎈", "💖", "🎂"];
+    setInterval(() => {
+      const el = document.createElement("div");
+      el.textContent = emoji[Math.floor(Math.random() * emoji.length)];
+      el.style.position = "fixed";
+      el.style.left = Math.random() * window.innerWidth + "px";
+      el.style.top = "-30px";
+      el.style.fontSize = "24px";
+      el.style.animation = "fall 4s linear forwards";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }, 500);
 
-    function drawCake() {
-      cakeCtx.clearRect(0, 0, cakeCanvas.width, cakeCanvas.height);
-      cakeCtx.fillStyle = '#f87171';
-      cakeCtx.fillRect(100, 120, 100, 50);
-      cakeCtx.fillStyle = '#facc15';
-      cakeCtx.fillRect(110, 110, 10, 20);
-      cakeCtx.fillRect(130, 110, 10, 20);
-      cakeCtx.fillRect(150, 110, 10, 20);
-      cakeCtx.fillStyle = '#ffdb58';
-      cakeCtx.beginPath();
-      cakeCtx.arc(115, 110, 5, 0, 2 * Math.PI);
-      cakeCtx.fill();
-      cakeCtx.beginPath();
-      cakeCtx.arc(135, 110, 5, 0, 2 * Math.PI);
-      cakeCtx.fill();
-      cakeCtx.beginPath();
-      cakeCtx.arc(155, 110, 5, 0, 2 * Math.PI);
-      cakeCtx.fill();
-    }
-
-    // Fireworks
-    const fwCanvas = document.getElementById("fireworks-canvas");
-    const fwCtx = fwCanvas.getContext("2d");
-    fwCanvas.width = window.innerWidth;
-    fwCanvas.height = window.innerHeight;
-
-    let fireworks = [];
-    let intervalId;
-    let running = false;
-
-    function createExplosion(x, y) {
-      let particles = [];
-      for (let i = 0; i < 50; i++) {
-        const angle = (Math.PI * 2 * i) / 50;
-        particles.push({
-          x,
-          y,
-          speed: Math.random() * 4 + 1,
-          angle,
-          radius: Math.random() * 2 + 1,
-          color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-          alpha: 1
-        });
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes fall {
+        to {
+          transform: translateY(100vh);
+          opacity: 0;
+        }
       }
-      return particles;
-    }
-
-    function animateFireworks() {
-      if (!running) return;
-      fwCtx.fillStyle = "rgba(0, 0, 0, 0.2)";
-      fwCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
-
-      fireworks.forEach((explosion, i) => {
-        explosion.forEach(p => {
-          p.x += Math.cos(p.angle) * p.speed;
-          p.y += Math.sin(p.angle) * p.speed;
-          p.alpha -= 0.01;
-          fwCtx.beginPath();
-          fwCtx.globalAlpha = p.alpha;
-          fwCtx.fillStyle = p.color;
-          fwCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          fwCtx.fill();
-        });
-        fireworks[i] = explosion.filter(p => p.alpha > 0);
-      });
-      fireworks = fireworks.filter(e => e.length > 0);
-      fwCtx.globalAlpha = 1;
-      requestAnimationFrame(animateFireworks);
-    }
-
-    function launchFireworks() {
-      running = true;
-      intervalId = setInterval(() => {
-        fireworks.push(createExplosion(
-          Math.random() * fwCanvas.width,
-          Math.random() * fwCanvas.height / 2
-        ));
-      }, 500);
-      animateFireworks();
-
-      // Stop after 5 seconds
-      setTimeout(() => {
-        clearInterval(intervalId);
-        running = false;
-      }, 5000);
-    }
-
-    // Start animation after short delay
-    setTimeout(() => {
-      drawCake();
-      setTimeout(() => {
-        launchFireworks();
-      }, 1000); // Delay fireworks start 1 sec after cake
-    }, 500); // Initial delay
+    `;
+    document.head.appendChild(style);
   </script>
+
 </body>
 </html>
