@@ -6,14 +6,12 @@
   <title>Happy Birthday!</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       margin: 0;
       overflow: hidden;
     }
-
     .container {
       display: flex;
       flex-direction: column;
@@ -23,7 +21,6 @@
       background-color: #fef08a;
       color: #eab308;
     }
-
     #birthday-heading {
       font-size: 3em;
       font-weight: 600;
@@ -32,36 +29,29 @@
       color: #f43f5e;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     @keyframes pulse {
       from { transform: scale(1); }
       to { transform: scale(1.1); }
     }
-
     #cake-canvas {
       margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      background-color: #ffffff;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-
     #message-box {
       background-color: #fff7ed;
       padding: 20px;
       border-radius: 8px;
-      margin-bottom: 20px;
       text-align: center;
       font-size: 1.2em;
       color: #1e293b;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       max-width: 80%;
     }
-
     #fireworks-canvas {
       position: fixed;
       top: 0;
@@ -71,151 +61,61 @@
       pointer-events: none;
       z-index: 10;
     }
-
-    .button {
-      padding: 12px 24px;
-      font-size: 1.1em;
-      background-color: #f43f5e;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .button:hover {
-      background-color: #d946ef;
-    }
-
-    #audio-controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 20px;
-      z-index: 11;
-    }
-
-    #play-pause-button {
-      padding: 10px;
-      border-radius: 50%;
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2em;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-
-    #play-pause-button:hover {
-      background-color: #2563eb;
-    }
-
-    #audio-player {
-      display: none;
-    }
   </style>
 </head>
-<body class="bg-yellow-100 text-yellow-900">
+<body>
   <div class="container">
     <h1 id="birthday-heading">Happy Birthday, My Love!</h1>
-    <canvas id="cake-canvas"></canvas>
+    <canvas id="cake-canvas" width="300" height="200"></canvas>
     <div id="message-box">
-      <p>I hope your day is as amazing as you are. I love you more than words can say! ❤️</p>
-    </div>
-    <div id="audio-controls">
-      <button id="play-pause-button"><i class="fas fa-play"></i></button>
-      <audio id="audio-player" src="happy-birthday-song.mp3" preload="auto"></audio>
+      I hope your day is as amazing as you are. I love you more than words can say! ❤️
     </div>
     <canvas id="fireworks-canvas"></canvas>
   </div>
 
   <script>
+    // Cake drawing
     const cakeCanvas = document.getElementById('cake-canvas');
     const cakeCtx = cakeCanvas.getContext('2d');
-    cakeCanvas.width = Math.min(window.innerWidth * 0.8, 400);
-    cakeCanvas.height = Math.min(window.innerHeight * 0.4, 300);
-    const cakePosition = { x: cakeCanvas.width / 2, y: cakeCanvas.height * 0.7 };
-    const cakeLayers = [
-      { width: cakeCanvas.width * 0.8, height: cakeCanvas.height * 0.3, color: '#fcd34d' },
-      { width: cakeCanvas.width * 0.6, height: cakeCanvas.height * 0.25, color: '#f87171' },
-      { width: cakeCanvas.width * 0.4, height: cakeCanvas.height * 0.2, color: '#8b5cf6' }
-    ];
-    const candles = [
-      { x: cakeCanvas.width / 2 - cakeCanvas.width * 0.1, y: cakeCanvas.height * 0.4, hasFlame: true },
-      { x: cakeCanvas.width / 2 + cakeCanvas.width * 0.1, y: cakeCanvas.height * 0.4, hasFlame: true },
-      { x: cakeCanvas.width / 2, y: cakeCanvas.height * 0.35, hasFlame: true }
-    ];
-    const frostingColor = '#ffffff', candleColor = '#facc15', flameColor = '#ffdb58', wickColor = '#4a5568';
-    let globalAlpha = 0, drawingCake = true;
 
     function drawCake() {
-      if (!drawingCake) return;
       cakeCtx.clearRect(0, 0, cakeCanvas.width, cakeCanvas.height);
-      cakeLayers.forEach(layer => {
-        cakeCtx.fillStyle = layer.color;
-        cakeCtx.beginPath();
-        cakeCtx.roundRect(cakePosition.x - layer.width / 2, cakePosition.y - layer.height, layer.width, layer.height, 10);
-        cakeCtx.fill();
-      });
-      cakeCtx.fillStyle = frostingColor;
+      cakeCtx.fillStyle = '#f87171';
+      cakeCtx.fillRect(100, 120, 100, 50);
+      cakeCtx.fillStyle = '#facc15';
+      cakeCtx.fillRect(110, 110, 10, 20);
+      cakeCtx.fillRect(130, 110, 10, 20);
+      cakeCtx.fillRect(150, 110, 10, 20);
+      cakeCtx.fillStyle = '#ffdb58';
       cakeCtx.beginPath();
-      cakeCtx.roundRect(cakePosition.x - cakeLayers[0].width / 2, cakePosition.y - cakeLayers[0].height, cakeLayers[0].width, cakeLayers[0].height / 4, 8);
+      cakeCtx.arc(115, 110, 5, 0, 2 * Math.PI);
       cakeCtx.fill();
-      candles.forEach(candle => {
-        cakeCtx.fillStyle = candleColor;
-        cakeCtx.beginPath();
-        cakeCtx.roundRect(candle.x, candle.y - cakeCanvas.height * 0.08, 8, cakeCanvas.height * 0.08, 3);
-        cakeCtx.fill();
-        cakeCtx.fillStyle = wickColor;
-        cakeCtx.fillRect(candle.x + 2, candle.y - cakeCanvas.height * 0.08 - 2, 4, 2);
-        if (candle.hasFlame) {
-          cakeCtx.fillStyle = flameColor;
-          cakeCtx.beginPath();
-          cakeCtx.ellipse(candle.x + 4, candle.y - cakeCanvas.height * 0.08 - 5, 6, 10, 0, 0, Math.PI * 2);
-          cakeCtx.fill();
-        }
-      });
+      cakeCtx.beginPath();
+      cakeCtx.arc(135, 110, 5, 0, 2 * Math.PI);
+      cakeCtx.fill();
+      cakeCtx.beginPath();
+      cakeCtx.arc(155, 110, 5, 0, 2 * Math.PI);
+      cakeCtx.fill();
     }
 
-    function animateCake() {
-      if (globalAlpha < 1) {
-        globalAlpha += 0.05;
-        cakeCtx.globalAlpha = globalAlpha;
-        drawCake();
-        requestAnimationFrame(animateCake);
-      } else {
-        drawCake();
-        setTimeout(() => {
-          drawingCake = false;
-          launchFireworks();
-        }, 500);
-      }
-    }
-
-    // --- Fireworks ---
+    // Fireworks
     const fwCanvas = document.getElementById("fireworks-canvas");
     const fwCtx = fwCanvas.getContext("2d");
     fwCanvas.width = window.innerWidth;
     fwCanvas.height = window.innerHeight;
-    let fireworks = [];
 
-    function launchFireworks() {
-      setInterval(() => {
-        fireworks.push(createExplosion(Math.random() * fwCanvas.width, Math.random() * fwCanvas.height / 2 + 100));
-      }, 800);
-      animateFireworks();
-    }
+    let fireworks = [];
+    let intervalId;
+    let running = false;
 
     function createExplosion(x, y) {
       let particles = [];
-      for (let i = 0; i < 60; i++) {
-        const angle = (Math.PI * 2 * i) / 60;
+      for (let i = 0; i < 50; i++) {
+        const angle = (Math.PI * 2 * i) / 50;
         particles.push({
           x,
           y,
-          speed: Math.random() * 5 + 2,
+          speed: Math.random() * 4 + 1,
           angle,
           radius: Math.random() * 2 + 1,
           color: `hsl(${Math.random() * 360}, 100%, 60%)`,
@@ -226,12 +126,14 @@
     }
 
     function animateFireworks() {
-      fwCtx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      if (!running) return;
+      fwCtx.fillStyle = "rgba(0, 0, 0, 0.2)";
       fwCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
-      fireworks.forEach((explosion, ei) => {
+
+      fireworks.forEach((explosion, i) => {
         explosion.forEach(p => {
           p.x += Math.cos(p.angle) * p.speed;
-          p.y += Math.sin(p.angle) * p.speed + 0.5;
+          p.y += Math.sin(p.angle) * p.speed;
           p.alpha -= 0.01;
           fwCtx.beginPath();
           fwCtx.globalAlpha = p.alpha;
@@ -239,31 +141,37 @@
           fwCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           fwCtx.fill();
         });
-        fireworks[ei] = explosion.filter(p => p.alpha > 0);
+        fireworks[i] = explosion.filter(p => p.alpha > 0);
       });
-      fireworks = fireworks.filter(explosion => explosion.length > 0);
+      fireworks = fireworks.filter(e => e.length > 0);
       fwCtx.globalAlpha = 1;
       requestAnimationFrame(animateFireworks);
     }
 
-    // --- Music ---
-    const playPauseBtn = document.getElementById('play-pause-button');
-    const audio = document.getElementById('audio-player');
-    let isPlaying = false;
+    function launchFireworks() {
+      running = true;
+      intervalId = setInterval(() => {
+        fireworks.push(createExplosion(
+          Math.random() * fwCanvas.width,
+          Math.random() * fwCanvas.height / 2
+        ));
+      }, 500);
+      animateFireworks();
 
-    playPauseBtn.addEventListener('click', () => {
-      if (!isPlaying) {
-        audio.play();
-        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-      } else {
-        audio.pause();
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-      }
-      isPlaying = !isPlaying;
-    });
+      // Stop after 5 seconds
+      setTimeout(() => {
+        clearInterval(intervalId);
+        running = false;
+      }, 5000);
+    }
 
-    // Begin animation on load
-    window.onload = animateCake;
+    // Start animation after short delay
+    setTimeout(() => {
+      drawCake();
+      setTimeout(() => {
+        launchFireworks();
+      }, 1000); // Delay fireworks start 1 sec after cake
+    }, 500); // Initial delay
   </script>
 </body>
 </html>
