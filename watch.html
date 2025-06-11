@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Movie</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    .player {
+      width: 90%;
+      max-width: 720px;
+      aspect-ratio: 16 / 9;
+      margin-bottom: 1rem;
+      background-color: #000;
+      border: 2px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .back-link {
+      text-decoration: none;
+      color: #e50914;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="title" id="movieTitle">Loading...</div>
+  <div class="player" id="playerContainer">
+    <iframe id="videoFrame" src=""></iframe>
+  </div>
+  <a class="back-link" href="index.html">⬅ Back to Movies</a>  <script>
+    const params = new URLSearchParams(window.location.search);
+    const movieKey = params.get("movie");
+
+    const movieDatabase = {
+      "movie1": {
+        title: "Pathaan (2023)",
+        embed: "https://dood.yt/e/abc123"
+      },
+      "movie2": {
+        title: "Animal (2024)",
+        embed: "https://dood.yt/e/def456"
+      },
+      "series1": {
+        title: "Web Series - Ep 1",
+        embed: "https://dood.yt/e/xyz789"
+      }
+    };
+
+    if (movieKey && movieDatabase[movieKey]) {
+      const { title, embed } = movieDatabase[movieKey];
+      document.getElementById("movieTitle").textContent = title;
+      document.getElementById("videoFrame").src = embed;
+    } else {
+      document.getElementById("movieTitle").textContent = "Movie Not Found";
+      document.getElementById("playerContainer").style.display = "none";
+    }
+  </script></body>
+</html>
