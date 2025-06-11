@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MovieFlix - Watch Free Movies</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    header {
+      background-color: #222;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .search-bar {
+      padding: 1rem;
+      text-align: center;
+    }
+    .search-bar input {
+      width: 80%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+    }
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1rem;
+    }
+    .categories button {
+      background-color: #333;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .movie {
+      background-color: #222;
+      padding: 0.5rem;
+      border-radius: 10px;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .movie:hover {
+      transform: scale(1.05);
+    }
+    .movie img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .watch-button {
+      margin-top: 0.5rem;
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      background-color: #e50914;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    footer {
+      background-color: #222;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <header>MovieFlix</header>
+  <div class="search-bar">
+    <input type="text" placeholder="Search movies..." onkeyup="searchMovies(this.value)" />
+  </div>
+  <div class="categories">
+    <button onclick="filterCategory('all')">All</button>
+    <button onclick="filterCategory('hollywood')">Hollywood</button>
+    <button onclick="filterCategory('south')">South Indian</button>
+    <button onclick="filterCategory('webseries')">Web Series</button>
+  </div>
+  <div class="movie-grid" id="movieGrid">
+    <div class="movie" data-category="hollywood">
+      <img src="https://via.placeholder.com/150x220.png?text=Movie+1" alt="Movie 1" />
+      <a href="watch.html?movie=movie1" class="watch-button">Watch Now</a>
+    </div>
+    <div class="movie" data-category="south">
+      <img src="https://via.placeholder.com/150x220.png?text=Movie+2" alt="Movie 2" />
+      <a href="watch.html?movie=movie2" class="watch-button">Watch Now</a>
+    </div>
+    <div class="movie" data-category="webseries">
+      <img src="https://via.placeholder.com/150x220.png?text=Series+1" alt="Series 1" />
+      <a href="watch.html?movie=series1" class="watch-button">Watch Now</a>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 MovieFlix - Made by you 😉
+  </footer>
+
+  <script>
+    function searchMovies(query) {
+      const movies = document.querySelectorAll('.movie');
+      movies.forEach(movie => {
+        const title = movie.innerText.toLowerCase();
+        movie.style.display = title.includes(query.toLowerCase()) ? '' : 'none';
+      });
+    }
+
+    function filterCategory(category) {
+      const movies = document.querySelectorAll('.movie');
+      movies.forEach(movie => {
+        if (category === 'all') {
+          movie.style.display = '';
+        } else {
+          movie.style.display = movie.dataset.category === category ? '' : 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
