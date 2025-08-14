@@ -202,14 +202,14 @@
   <script>
     // Countdown function
     function updateCountdown() {
-      const bday = new Date("May 15, 2025 00:00:00").getTime();
+      const bday = new Date("August 14, 2025 00:00:00").getTime();
       const now = new Date().getTime();
       const diff = bday - now;
 
-      if (diff <= 0) {
-        document.getElementById("countdown").innerHTML = "🎉 🎉";
-        return;
-      }
+      //if (diff <= 0) {
+       // document.getElementById("countdown").innerHTML = "🎉 🎉";
+        //return;
+    //  } 
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -290,5 +290,6 @@
   </script>
 </body>
 </html>
+
 
 
