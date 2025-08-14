@@ -3,34 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <title>Our Memories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
       margin: 0;
       padding: 0;
+      min-height: 100vh;
       background: linear-gradient(to bottom, #ffccff, #ffe6e6);
       font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
     }
     h1 {
       color: #ff1493;
-      margin-top: 2rem;
+      margin-bottom: 1.2rem;
       font-size: 2rem;
+      letter-spacing: 1px;
     }
     .memories-strip {
       display: flex;
       flex-wrap: wrap;
+      gap: 2rem 2.5rem;
       justify-content: center;
-      gap: 2rem;
-      margin: 2rem auto;
-      max-width: 900px;
     }
     .frame {
       background: #fff0f5;
       border: 4px solid #ff66cc;
       border-radius: 18px;
-      padding: 12px;
-      box-shadow: 0 4px 16px rgba(255,20,147,0.2);
-      width: 220px;
+      padding: 12px 10px 14px 10px;
+      box-shadow: 0 4px 16px rgba(255,20,147,0.09);
+      width: 210px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -42,11 +47,13 @@
       border-radius: 12px;
       margin-bottom: 10px;
       border: 2px solid #fe69cc;
+      background: #fff;
     }
     .caption {
-      font-size: 1.1rem;
+      font-size: 1.07rem;
       color: #d63384;
       font-style: italic;
+      margin-top: 2px;
     }
   </style>
 </head>
@@ -55,13 +62,13 @@
   <div class="memories-strip">
     <div class="frame">
       <img src="IMG_20250814_160257_992.jpg" alt="Memory Photo">
-      <div class="caption">First trip together 💕</div>
+      <div class="caption">Our beautiful moment 💖</div>
     </div>
     <div class="frame">
-      <img src="IMG_20250814_160209_405.jpg" alt="Another Memory">
-      <div class="caption">Laughs that never end 🤣</div>
+      <img src="IMG_20250814_160209_405.jpg" alt="Memory Photo">
+      <div class="caption">Best day ever ✨</div>
     </div>
-    <!-- Add more frames below as needed -->
+    <!-- Add more .frame blocks as you want -->
   </div>
 </body>
 </html>
