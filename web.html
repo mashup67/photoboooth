@@ -1,0 +1,322 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+  <title>Happy one year!! ❤️</title>  
+  <style>  
+    html, body {  
+      height: 100%;  
+      margin: 0;  
+      padding: 0;  
+      background: linear-gradient(to bottom, #ffccff, #ffe6e6);  
+      font-family: 'Comic Sans MS', cursive, sans-serif;  
+      overflow: hidden;  
+    }  body {  
+  display: flex;  
+  flex-direction: column;  
+  align-items: center;  
+  justify-content: center;  
+  position: relative;  
+  text-align: center;  
+}  
+
+h1.birthday-text {  
+  font-size: 2.5rem;  
+  color: #ff1493;  
+  animation: pop 1s ease-in-out infinite alternate;  
+  margin-bottom: 0.5rem;  
+}  
+
+@keyframes pop {  
+  0% { transform: scale(1); }  
+  100% { transform: scale(1.1); }  
+}  
+
+.cake {  
+  position: relative;  
+  width: 150px;  
+  height: 180px;  
+  margin: 0 auto;  
+}  
+
+.layer {  
+  position: absolute;  
+  width: 150px;  
+  height: 40px;  
+  border-radius: 10px;  
+}  
+
+.layer1 { top: 0; background: #ff9999; }  
+.layer2 { top: 50px; background: #ff66cc; }  
+.layer3 { top: 100px; background: #ff1493; }  
+
+.candle {  
+  position: absolute;  
+  top: -20px;  
+  left: 70px;  
+  width: 10px;  
+  height: 20px;  
+  background: #ffff66;  
+  border-radius: 2px;  
+  animation: flicker 0.2s infinite;  
+}  
+
+@keyframes flicker {  
+  0% { background-color: #ff0; }  
+  100% { background-color: #ffa; }  
+}  
+
+.message {  
+  font-size: 1.1rem;  
+  color: #d63384;  
+  font-style: italic;  
+  animation: fadeIn 4s ease;  
+  margin-top: 0.8rem;  
+}  
+
+@keyframes fadeIn {  
+  from { opacity: 0; }  
+  to { opacity: 1; }  
+}  
+
+.emojis {  
+  font-size: 2rem;  
+  animation: bounce 1s infinite alternate;  
+  margin: 0.8rem 0;  
+}  
+
+@keyframes bounce {  
+  from { transform: translateY(0); }  
+  to { transform: translateY(-10px); }  
+}  
+
+#countdown {  
+  font-size: 1.3rem;  
+  color: #cc007a;  
+  margin: 0.5rem auto;  
+  font-weight: bold;  
+}  
+
+.buttons {  
+  margin-top: 1rem;  
+}  
+
+.btn {  
+  display: inline-block;  
+  padding: 12px 20px;  
+  margin: 10px;  
+  background-color: #ff66cc;  
+  color: white;  
+  border: none;  
+  border-radius: 20px;  
+  font-size: 1rem;  
+  cursor: pointer;  
+  transition: background 0.3s;  
+}  
+
+.btn:hover {  
+  background-color: #e60073;  
+}  
+
+.popup {  
+  display: none;  
+  position: fixed;  
+  z-index: 1000;  
+  left: 0; top: 0;  
+  width: 100%; height: 100%;  
+  background-color: rgba(0,0,0,0.5);  
+}  
+
+.popup-content {  
+  background-color: #fff0f5;  
+  margin: 15% auto;  
+  padding: 20px;  
+  border-radius: 15px;  
+  width: 80%;  
+  max-width: 400px;  
+  text-align: left;  
+  font-family: 'Courier New', cursive;  
+  font-size: 1.1rem;  
+  animation: fadeIn 0.5s ease;  
+}  
+
+.close {  
+  float: right;  
+  font-size: 1.5rem;  
+  color: #d00;  
+  cursor: pointer;  
+}  
+
+.memories-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 1.5rem;
+  justify-content: center;
+  margin-top: 2.2rem;
+}
+
+.frame {
+  background: #fff0f5;
+  border: 4px solid #ff66cc;
+  border-radius: 18px;
+  padding: 12px 10px 14px 10px;
+  box-shadow: 0 4px 16px rgba(255,20,147,0.09);
+  width: 145px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.frame img {
+  width: 110px;
+  height: 115px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 2px solid #fe69cc;
+  background: #fff;
+}
+
+.caption {
+  font-size: 1rem;
+  color: #d63384;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+
+#confetti {  
+  position: fixed;  
+  top: 0;  
+  left: 0;  
+  width: 100%;  
+  height: 100%;  
+  pointer-events: none;  
+  z-index: 999;  
+}
+
+  </style>  
+
+  <body>
+  <h1>✨ Our Memories Together ✨</h1>
+  <div class="memories-strip">
+    <div class="frame">
+      <img src="IMG_20250814_160257_992.jpg" alt="Memory Photo">
+      <div class="caption">Our beautiful moment 💖</div>
+    </div>
+    <div class="frame">
+      <img src="IMG_20250814_160209_405.jpg" alt="Memory Photo">
+      <div class="caption">Best day ever ✨</div>
+    </div>
+    <!-- Add more .frame blocks as you want -->
+  </div>
+  <!-- Hidden audio element -->    <!-- Play button to trigger audio -->  <canvas id="confetti"></canvas>
+
+  <h1 class="birthday-text">🎉 Happy one Year ! 🎉</h1>    <div id="countdown">⏳ Countdown to our 1 year...</div>    <div class="cake">  
+    <div class="candle"></div>  
+    <div class="layer layer1"></div>  
+    <div class="layer layer2"></div>  
+    <div class="layer layer3"></div>  
+  </div>    <p class="message">You light up my life like this candle 💖</p>  
+  <div class="emojis">🕺💃🎂🎁🎉🎊</div>    <div class="buttons">  
+    <button class="btn" onclick="openPopup()">💌 Read My Letter</button>  
+    <button class="btn" onclick="goToGift()">🎁A Surprise Gift</button>  
+  </div>    <!-- Popup -->    <div class="popup" id="popup">  
+    <div class="popup-content">  
+      <span class="close" onclick="closePopup()">&times;</span>  
+      <p>Dear Pasandida mard🧸💖,</p>  
+      <p>You know something good happened today? you came into my life and that thing was very precious to me, 15th August was when we talked for the first time and yes, you were the one who sent the first text You are a very special thing in my life and I love you so much 👀🤭</p>  
+      <p>Happy 1st year to you once again💗</p>  
+      <p>Forever yours,<br/>Your dumboo🫶</p>  
+    </div>  
+  </div>    <script>  
+    // Countdown function  
+    function updateCountdown() {  
+      const bday = new Date("August 14, 2025 00:00:00").getTime();  
+      const now = new Date().getTime();  
+      const diff = bday - now;  
+  
+      //if (diff <= 0) {  
+       // document.getElementById("countdown").innerHTML = "🎉 🎉";  
+        //return;  
+    //  }   
+  
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));  
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);  
+      const minutes = Math.floor((diff / 1000 / 60) % 60);  
+      const seconds = Math.floor((diff / 1000) % 60);  
+  
+      document.getElementById("countdown").innerHTML =   
+        `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s until your big day! 🎈`;  
+    }  
+    setInterval(updateCountdown, 1000);  
+    updateCountdown();  
+  
+    // Love letter popup functions  
+    function openPopup() {  
+      document.getElementById("popup").style.display = "block";  
+    }  
+    function closePopup() {  
+      document.getElementById("popup").style.display = "none";  
+    }  
+  
+    // Gift link function  
+    function goToGift() {  
+      window.location.href = "https://mashup67.github.io/photoboooth/hehe.html"; // Replace with real link  
+    }  
+  
+    // Confetti animation  
+    const canvas = document.getElementById("confetti");  
+    const ctx = canvas.getContext("2d");  
+    canvas.width = window.innerWidth;  
+    canvas.height = window.innerHeight;  
+  
+    let confetti = [];  
+    for (let i = 0; i < 100; i++) {  
+      confetti.push({  
+        x: Math.random() * canvas.width,  
+        y: Math.random() * canvas.height,  
+        r: Math.random() * 6 + 2,  
+        d: Math.random() * 100 + 10,  
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,  
+        tilt: Math.floor(Math.random() * 10) - 10,  
+        tiltAngleIncremental: (Math.random() * 0.07) + 0.05,  
+        tiltAngle: 0  
+      });  
+    }  
+  
+    function drawConfetti() {  
+      ctx.clearRect(0, 0, canvas.width, canvas.height);  
+      confetti.forEach(c => {  
+        ctx.beginPath();  
+        ctx.lineWidth = c.r;  
+        ctx.strokeStyle = c.color;  
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);  
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);  
+        ctx.stroke();  
+      });  
+      updateConfetti();  
+    }  
+  
+    function updateConfetti() {  
+      confetti.forEach(c => {  
+        c.tiltAngle += c.tiltAngleIncremental;  
+        c.y += (Math.cos(c.d) + 1 + c.r / 2) / 2;  
+        c.tilt = Math.sin(c.tiltAngle - c.d / 3) * 15;  
+      });  
+    }  
+  
+    function startConfetti() {  
+      setInterval(drawConfetti, 30);  
+    }  
+  
+    // Audio play functionality  
+    document.getElementById("play-audio-btn").addEventListener("click", function() {  
+      var audio = document.getElementById("birthday-audio");  
+      audio.play(); // Play the audio when the button is clicked  
+      this.style.display = "none"; // Hide the button after it plays  
+      startConfetti(); // Start the confetti animation  
+    });  
+  </script>
+</body>  
+</html>  
