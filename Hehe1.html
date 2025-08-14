@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Our Memories</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ffccff, #ffe6e6);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      color: #ff1493;
+      margin-top: 2rem;
+      font-size: 2rem;
+    }
+    .memories-strip {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem auto;
+      max-width: 900px;
+    }
+    .frame {
+      background: #fff0f5;
+      border: 4px solid #ff66cc;
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 4px 16px rgba(255,20,147,0.2);
+      width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .frame img {
+      width: 180px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 2px solid #fe69cc;
+    }
+    .caption {
+      font-size: 1.1rem;
+      color: #d63384;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>✨ Our Memories Together ✨</h1>
+  <div class="memories-strip">
+    <div class="frame">
+      <img src="your_first_photo.jpg" alt="Memory Photo">
+      <div class="caption">First trip together 💕</div>
+    </div>
+    <div class="frame">
+      <img src="your_second_photo.jpg" alt="Another Memory">
+      <div class="caption">Laughs that never end 🤣</div>
+    </div>
+    <!-- Add more frames below as needed -->
+  </div>
+</body>
+</html>
