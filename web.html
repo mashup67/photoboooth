@@ -236,10 +236,10 @@ h1.birthday-text {
       const now = new Date().getTime();  
       const diff = bday - now;  
   
-      //if (diff <= 0) {  
-       // document.getElementById("countdown").innerHTML = "🎉 🎉";  
-        //return;  
-    //  }   
+      if (diff <= 0) {  
+        document.getElementById("countdown").innerHTML = "🎉 Happy birthday 🎉";  
+        return;  
+      }   
   
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));  
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);  
